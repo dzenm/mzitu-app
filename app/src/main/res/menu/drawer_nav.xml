@@ -10,6 +10,11 @@
             android:id="@+id/ligui"
             android:title="@string/drawer_nav_ligui"
             app:showAsAction="always" />
+        <item
+            android:id="@+id/xxoo"
+            android:title="@string/drawer_nav_xxoo"
+            app:showAsAction="always" />
+        
     </group>
 
 </menu>
