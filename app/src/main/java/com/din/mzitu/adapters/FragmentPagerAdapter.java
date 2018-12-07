@@ -46,7 +46,7 @@ public abstract class FragmentPagerAdapter extends PagerAdapter {
 
         final long itemId = getItemId(position);
 
-        // Do we already have this fragment?
+        // Do we already have this fragment_content?
         String name = makeFragmentName(container.getId(), itemId);
         Fragment fragment = mFragmentManager.findFragmentByTag(name);
         if (fragment != null) {

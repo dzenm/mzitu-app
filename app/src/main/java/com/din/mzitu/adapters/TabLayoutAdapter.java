@@ -1,6 +1,5 @@
 package com.din.mzitu.adapters;
 
-
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.support.annotation.Nullable;

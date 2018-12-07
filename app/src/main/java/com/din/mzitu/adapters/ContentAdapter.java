@@ -1,32 +1,29 @@
 package com.din.mzitu.adapters;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.view.View;
+import android.graphics.Bitmap;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.model.GlideUrl;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.target.Target;
+import com.bumptech.glide.request.transition.Transition;
 import com.din.mzitu.R;
-import com.din.mzitu.beans.ContentBean;
-import com.din.mzitu.mvp.ui.activities.PictureActivity;
+import com.din.mzitu.base.BaseAdapter;
+import com.din.mzitu.bean.ContentBean;
+import com.din.mzitu.utill.GlideApp;
 
-import java.util.List;
+import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
 
 public class ContentAdapter extends BaseAdapter {
 
-    private String title;
-    private Activity activity;
-
-    public void setActivity(Activity activity) {
-        this.activity = activity;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
+    public ContentAdapter(Activity activity) {
+        super(activity);
     }
 
     @Override
@@ -35,42 +32,46 @@ public class ContentAdapter extends BaseAdapter {
     }
 
     @Override
-    protected void createContentHolder(final Context context, final ViewHolder holder, List beans) {
-        final List<ContentBean> contentBeans = beans;
-        View view = holder.itemView;
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                int position = holder.getAdapterPosition();
-                Intent intent = new Intent(context, PictureActivity.class);
-                intent.putExtra(PictureActivity.PICTURE_TITLE, title);
-                intent.putExtra(PictureActivity.PICTURE_IMAGE, contentBeans.get(position).getImage());
-                intent.putExtra(PictureActivity.PICTURE_POSITION, position);
-                context.startActivity(intent);
-                activity.overridePendingTransition(R.anim.zoom_in, R.anim.zoom_out);
-            }
-        });
-    }
-
-    @Override
-    protected void setBindViewHolderData(ViewHolder viewHolder, Object bean, String url) {
-        ContentBean contentBean = (ContentBean) bean;
+    protected void setBindViewHolderData(ViewHolder viewHolder,int position) {
+        ContentBean contentBean = (ContentBean) beans.get(position);
         TextView title = viewHolder.get(R.id.text);
-        ImageView imageView = viewHolder.get(R.id.image);
+        final ImageView imageView = viewHolder.get(R.id.image);
         title.setText(contentBean.getTitle());
-        if (url != null) {
-            GlideUrl glideUrl = new GlideUrl(url, header);  // 防盗链，图片会加载失败，需要更换请求头
-            Glide.with(activity).load(glideUrl).into(imageView);
-        } else {
-            RequestOptions options = new RequestOptions();
-            options.skipMemoryCache(true).placeholder(R.drawable.placeholder);
-            Glide.with(activity).setDefaultRequestOptions(options).load("").into(imageView);
+        String header = "";
+        if (contentBean.getType() == TYPE_MZITU) {
+            header = HEADER_MZITU;
+        } else if (contentBean.getType() == TYPE_LIGUI) {
+            header = HEADER_LIGUI;
         }
-    }
 
-    @Override
-    protected void addBeanData(String[] url, List oldBeans, int position) {
-        List<ContentBean> beanList = oldBeans;
-        url[position] = beanList.get(position).getImage();
+        String tag = (String) imageView.getTag(R.id.image_url);
+        String url = contentBean.getImage();
+
+        // 防盗链，图片会加载失败，需要更换请求头
+        GlideUrl glideUrl = new GlideUrl(url == tag ? tag : url, header(header));
+        if (tag == url) {
+            GlideApp.with(activity)
+                    .load(glideUrl)
+                    .thumbnail(0.1f)
+                    .centerCrop()
+                    .skipMemoryCache(false)
+                    .transition(withCrossFade())
+                    .into(imageView);
+        } else {
+            GlideApp.with(activity)
+                    .asBitmap()
+                    .load(glideUrl)
+                    .centerCrop()
+                    .skipMemoryCache(false)
+                    .placeholder(R.drawable.placeholder)
+                    .error(R.drawable.placeholder_error)
+                    .into(new SimpleTarget<Bitmap>(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL) {
+                        @Override
+                        public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                            imageView.setImageBitmap(resource);
+                        }
+                    });
+            imageView.setTag(R.id.image_url, url);
+        }
     }
 }
