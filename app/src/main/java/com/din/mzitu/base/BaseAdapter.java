@@ -1,23 +1,23 @@
 package com.din.mzitu.base;
 
-import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 import android.widget.TextView;
 
 import com.bumptech.glide.load.model.Headers;
 import com.din.mzitu.R;
-import com.din.mzitu.adapters.FootViewHolder;
-import com.din.mzitu.adapters.HeadViewHolder;
-import com.din.mzitu.adapters.ViewHolder;
+import com.din.mzitu.adapter.FootViewHolder;
+import com.din.mzitu.adapter.HeadViewHolder;
+import com.din.mzitu.adapter.ViewHolder;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,12 +42,12 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<RecyclerView.V
 
     protected List<T> beans;
     protected OnItemClickListener onItemClickListener;
-    protected Activity activity;
+    protected Fragment fragment;
     protected int loadingStatus = 0;
     private int notifyStart = 0;
 
-    public BaseAdapter(Activity activity) {
-        this.activity = activity;
+    public BaseAdapter(Fragment fragment) {
+        this.fragment = fragment;
     }
 
     public void setNotifyStart(int notifyStart) {
@@ -57,7 +57,6 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<RecyclerView.V
     public void addBeanData(List<T> listBean) {
         beans = listBean;
         notifyItemRangeChanged(notifyStart, beans.size() - notifyStart);
-        loadingStatus = LOADING_STATE_RUNNING;
     }
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
@@ -66,6 +65,7 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<RecyclerView.V
 
     public void setLoadingStatus(int loadingStatus) {
         this.loadingStatus = loadingStatus;
+
     }
 
     protected abstract int layoutContentID();
@@ -145,9 +145,12 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<RecyclerView.V
                     }
                 }
             });
+            // item进入动画
+            Context context = holder.itemView.getContext();
+            LayoutAnimationController controller = AnimationUtils.loadLayoutAnimation(context, R.anim.layout_animation_fall_down);
+            ((ViewGroup) holder.itemView).setLayoutAnimation(controller);
         } else if (holder instanceof FootViewHolder) {
             FootViewHolder viewHolder = (FootViewHolder) holder;
-
             TextView tipText = viewHolder.get(R.id.tipText);
             tipText.setText(loadingStatus == LOADING_STATE_RUNNING ? R.string.loading_status_running :
                     loadingStatus == LOADING_STATE_FINISH ? R.string.loading_status_finish : R.string.loading_status_more);

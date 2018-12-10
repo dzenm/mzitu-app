@@ -2,8 +2,8 @@ package com.din.mzitu.api;
 
 import android.util.Log;
 
-import com.din.mzitu.adapters.ContentAdapter;
-import com.din.mzitu.adapters.SeriesAdapter;
+import com.din.mzitu.adapter.ContentAdapter;
+import com.din.mzitu.adapter.SeriesAdapter;
 import com.din.mzitu.base.BaseApi;
 import com.din.mzitu.bean.ContentBean;
 import com.din.mzitu.bean.SeriesBean;

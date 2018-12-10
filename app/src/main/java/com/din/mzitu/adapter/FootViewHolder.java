@@ -1,4 +1,4 @@
-package com.din.mzitu.adapters;
+package com.din.mzitu.adapter;
 
 import android.view.View;
 

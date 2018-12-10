@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">妹子图</string>
-    <string name="title_activity_content">ContentActivity</string>
     <string name="drawer_nav_mzitu">妹子网</string>
     <string name="drawer_nav_ligui">丽柜网</string>
     <string name="drawer_nav_xxoo">妹子自拍</string>

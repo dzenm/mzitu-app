@@ -1,12 +1,12 @@
 package com.din.mzitu.base;
 
-import android.app.Fragment;
 import android.graphics.Color;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -15,19 +15,24 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.din.mzitu.R;
-import com.din.mzitu.adapters.ContentAdapter;
-import com.din.mzitu.adapters.ViewHolder;
-import com.din.mzitu.utill.GlideApp;
+import com.din.mzitu.adapter.ViewHolder;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 public abstract class BaseFragment<T> extends Fragment implements SwipeRefreshLayout.OnRefreshListener, BaseAdapter.OnItemClickListener {
 
     private boolean isViewCreated = false;          // 判断页面是否创建完成
     protected boolean isFetchPrepared = false;      // 判断页面加载完成
-    private PictureAsyncTask asyncTask;             // 异步加载任务
-    private List<PictureAsyncTask> asyncTasks;      // 异步加载任务集合
+
     private RecyclerView recyclerView;
     protected SwipeRefreshLayout swipeRefresh;
     protected BaseAdapter adapter;
@@ -67,22 +72,21 @@ public abstract class BaseFragment<T> extends Fragment implements SwipeRefreshLa
      *
      * @param position 最后一个可见item的position
      */
-    protected abstract void nextPageData(int position);
+    protected abstract void pagingData(int position);
 
     /**
      * 异步加载的后台任务
      *
-     * @param page 加载页
      * @return
      */
-    protected abstract T doInBackgroundTask(int page);
+    protected abstract void observableTask(ObservableEmitter<T> emitter);
 
     /**
      * 异步加载结束的数据处理
      *
      * @param t 返回的数据
      */
-    protected abstract void postExecuteTask(T t);
+    protected abstract void observerData(T t);
 
     @Nullable
     @Override
@@ -94,10 +98,7 @@ public abstract class BaseFragment<T> extends Fragment implements SwipeRefreshLa
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if (getUserVisibleHint() && isViewCreated && !isFetchPrepared) {
-            startAsyncTask(page);       // 页面可见并且View创建后开始加载异步任务
-        }
-        if (!getUserVisibleHint() && isViewCreated) {
-            cancelAllTask();
+            startAsyncTask();       // 页面可见并且View创建后开始加载异步任务
         }
     }
 
@@ -106,7 +107,7 @@ public abstract class BaseFragment<T> extends Fragment implements SwipeRefreshLa
         super.onViewCreated(view, savedInstanceState);
         initView(view);
         if (getPageFragment() == PAGE_ONE) {
-            startAsyncTask(page);       // 第一个Fragment加载异步任务
+            startAsyncTask();             // 第一个Fragment加载异步任务
         }
         isViewCreated = true;             // 页面创建完成的标志
     }
@@ -126,38 +127,30 @@ public abstract class BaseFragment<T> extends Fragment implements SwipeRefreshLa
      * @param view
      */
     protected void initView(View view) {
-        recyclerView = view.findViewById(R.id.RecyclerView);
         swipeRefresh = view.findViewById(R.id.swipeRefresh);
-        FloatingActionButton actionButton = view.findViewById(R.id.floatbtn);
-        actionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                recyclerView.smoothScrollToPosition(0);
-            }
-        });
+        recyclerView = view.findViewById(R.id.recyclerView);
 
         listBeans = new ArrayList<>();
         swipeRefresh.setRefreshing(true);
-        swipeRefresh.setColorSchemeColors(Color.RED, Color.YELLOW, Color.GREEN, Color.BLUE, Color.CYAN, Color.BLACK);
+        swipeRefresh.setColorSchemeColors(Color.RED, Color.GREEN, Color.BLUE, Color.CYAN, Color.BLACK);
         swipeRefresh.setOnRefreshListener(this);
 
         adapter = getAdapter();
         recyclerView.setLayoutManager(getLayoutManager());
         recyclerView.setAdapter(adapter);    // 设置RecyclerView的适配器
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
         adapter.setOnItemClickListener(this);
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                // newState的三种状态:
+                // RecyclerView.SCROLL_STATE_IDLE（滑动停止状态）
+                // RecyclerView.SCROLL_STATE_DRAGGING（自然滑动状态）
+                // RecyclerView.SCROLL_STATE_SETTLING（手指滑动状态）
                 super.onScrollStateChanged(recyclerView, newState);
-                /**
-                 * newState的三种状态:
-                 * RecyclerView.SCROLL_STATE_IDLE（滑动停止状态）
-                 * RecyclerView.SCROLL_STATE_DRAGGING（自然滑动状态）
-                 * RecyclerView.SCROLL_STATE_SETTLING（手指滑动状态）
-                 **/
-                int lastPosition = -1;
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    int lastPosition = -1;
                     RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
                     if (layoutManager instanceof LinearLayoutManager) {
                         // 通过LayoutManager找到当前显示的最后的item的position
@@ -168,15 +161,17 @@ public abstract class BaseFragment<T> extends Fragment implements SwipeRefreshLa
                         // 获取瀑布流最后一行的数组
                         ((StaggeredGridLayoutManager) layoutManager).findLastVisibleItemPositions(lastPositions);
                         lastPosition = findMax(lastPositions);
+
+                        // 解决屏闪
+                        ((StaggeredGridLayoutManager) layoutManager).invalidateSpanAssignments();
                     }
                     //时判断界面显示的最后item的position是否等于itemCount总数-1也就是最后一个item的position
                     //如果相等则说明已经滑动到最后了
                     if (lastPosition == recyclerView.getLayoutManager().getItemCount() - 1) {
                         if (!isFetchDataAll) {
-                            nextPageData(lastPosition);
-                            GlideApp.with(getActivity()).resumeRequests();
+                            pagingData(lastPosition);
                         } else {
-                            getAdapter().setLoadingStatus(BaseAdapter.LOADING_STATE_FINISH);
+                            adapter.setLoadingStatus(BaseAdapter.LOADING_STATE_FINISH);
                         }
                     }
                 }
@@ -200,11 +195,18 @@ public abstract class BaseFragment<T> extends Fragment implements SwipeRefreshLa
             }
 
         });
+
+        FloatingActionButton actionButton = view.findViewById(R.id.floatbtn);
+        actionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                recyclerView.smoothScrollToPosition(0);
+            }
+        });
     }
 
     @Override
     public void onRefresh() {
-        startAsyncTask(page);
     }
 
     /**
@@ -223,69 +225,57 @@ public abstract class BaseFragment<T> extends Fragment implements SwipeRefreshLa
         return max;
     }
 
-    /**
-     * 开始异步加载任务
-     *
-     * @param page 加载的页数
-     */
-    protected void startAsyncTask(int page) {
-        if (taskIsRunning()) {
-            cancelAllTask();
-        }
-        asyncTask = new PictureAsyncTask();
-        asyncTask.execute(page);
-        asyncTasks = new ArrayList<>();
-        asyncTasks.add(asyncTask);
-    }
-
-    /**
-     * 判断异步加载任务是否正在运行
-     *
-     * @return
-     */
-    protected boolean taskIsRunning() {
-        if (asyncTask != null && asyncTask.getStatus() == AsyncTask.Status.RUNNING) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * 取消加载任务
-     */
-    protected void cancelAllTask() {
-        if (asyncTasks != null) {
-            for (PictureAsyncTask asyncTask : asyncTasks) {
-                asyncTask.cancel(true);
-            }
-        }
-    }
-
     @Override
     public void onItemClick(ViewHolder viewHolder, int position) {
-
     }
 
-    /**
-     * 创建异步加载任务
-     */
-    private class PictureAsyncTask extends AsyncTask<Integer, Void, T> {
+    protected Observable<T> observable = Observable.create(new ObservableOnSubscribe<T>() {
         @Override
-        protected T doInBackground(Integer... strings) {
-            return doInBackgroundTask(strings[0]);    // 后台任务
+        public void subscribe(ObservableEmitter<T> emitter) throws Exception {
+            observableTask(emitter);
+        }
+    });
+
+    protected Observer observer = new Observer() {
+        @Override
+        public void onSubscribe(Disposable d) {
+
         }
 
         @Override
-        protected void onPostExecute(T t) {
-            super.onPostExecute(t);
-            postExecuteTask(t);    // 后台任务结束执行的任务
+        public void onNext(Object p0) {
+            if (!isFetchPrepared) {
+                isFetchPrepared = true;
+            }
+            adapter.setLoadingStatus(BaseAdapter.LOADING_STATE_MORE);
+            observerData((T) p0);
         }
+
+        @Override
+        public void onError(Throwable e) {
+            if (e != null) {
+                adapter.setLoadingStatus(BaseAdapter.LOADING_STATE_FINISH);
+                isFetchDataAll = true;      // 返回为空解析失败或没有更多数据时不再加载数据
+            }
+        }
+
+        @Override
+        public void onComplete() {
+
+        }
+    };
+
+    protected void startAsyncTask() {
+        observable.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(observer);
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        cancelAllTask();
         isViewCreated = false;
+        isFetchPrepared = false;
+        observable.distinct();
     }
 }

@@ -1,7 +1,7 @@
 package com.din.mzitu.ui.activities;
 
-import android.app.FragmentTransaction;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
@@ -23,7 +23,7 @@ public class ContentActivity extends AppCompatActivity {
         getSupportActionBar().setTitle(title);        // 设置标题
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         FragmentContent fragmentSelf = FragmentContent.newInstance(title, 1);
         transaction.add(R.id.framelayout, fragmentSelf);
         transaction.show(fragmentSelf).commit();        // 切换Fragment

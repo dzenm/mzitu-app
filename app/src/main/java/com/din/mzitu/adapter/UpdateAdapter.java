@@ -1,6 +1,7 @@
-package com.din.mzitu.adapters;
+package com.din.mzitu.adapter;
 
-import android.app.Activity;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.widget.TextView;
 
 import com.din.mzitu.R;
@@ -9,8 +10,8 @@ import com.din.mzitu.bean.UpdateBean;
 
 public class UpdateAdapter extends BaseAdapter {
 
-    public UpdateAdapter(Activity activity) {
-        super(activity);
+    public UpdateAdapter(Fragment fragment) {
+        super(fragment);
     }
 
     @Override

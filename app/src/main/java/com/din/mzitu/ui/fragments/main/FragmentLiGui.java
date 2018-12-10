@@ -1,9 +1,9 @@
 package com.din.mzitu.ui.fragments.main;
 
-import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
@@ -11,7 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.din.mzitu.R;
-import com.din.mzitu.adapters.TabLayoutAdapter;
+import com.din.mzitu.adapter.TabLayoutAdapter;
 import com.din.mzitu.ui.fragments.ligui.FragmentAll;
 import com.din.mzitu.utill.Url;
 
@@ -72,6 +72,7 @@ public class FragmentLiGui extends Fragment {
 
         TabLayoutAdapter adapter = new TabLayoutAdapter(getChildFragmentManager(), fragments, titles);
         viewPager.setAdapter(adapter);
+        viewPager.setOffscreenPageLimit(fragments.size());
         tabLayout.setupWithViewPager(viewPager);
     }
 

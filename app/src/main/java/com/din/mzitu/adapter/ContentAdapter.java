@@ -1,15 +1,13 @@
-package com.din.mzitu.adapters;
+package com.din.mzitu.adapter;
 
-import android.app.Activity;
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.model.GlideUrl;
-import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
@@ -22,8 +20,8 @@ import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOption
 
 public class ContentAdapter extends BaseAdapter {
 
-    public ContentAdapter(Activity activity) {
-        super(activity);
+    public ContentAdapter(Fragment fragment) {
+        super(fragment);
     }
 
     @Override
@@ -32,7 +30,7 @@ public class ContentAdapter extends BaseAdapter {
     }
 
     @Override
-    protected void setBindViewHolderData(ViewHolder viewHolder,int position) {
+    protected void setBindViewHolderData(ViewHolder viewHolder, int position) {
         ContentBean contentBean = (ContentBean) beans.get(position);
         TextView title = viewHolder.get(R.id.text);
         final ImageView imageView = viewHolder.get(R.id.image);
@@ -50,7 +48,7 @@ public class ContentAdapter extends BaseAdapter {
         // 防盗链，图片会加载失败，需要更换请求头
         GlideUrl glideUrl = new GlideUrl(url == tag ? tag : url, header(header));
         if (tag == url) {
-            GlideApp.with(activity)
+            GlideApp.with(fragment)
                     .load(glideUrl)
                     .thumbnail(0.1f)
                     .centerCrop()
@@ -58,7 +56,7 @@ public class ContentAdapter extends BaseAdapter {
                     .transition(withCrossFade())
                     .into(imageView);
         } else {
-            GlideApp.with(activity)
+            GlideApp.with(fragment)
                     .asBitmap()
                     .load(glideUrl)
                     .centerCrop()

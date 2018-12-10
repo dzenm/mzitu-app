@@ -4,88 +4,30 @@
     <color name="colorPrimaryDark">#C2185B</color>
     <color name="colorAccent">#757575</color>
     <!-- Red -->
-    <color name="materialDarkRed">#D32F2F</color>
-    <color name="materialLightRed">#F44336</color>
-    <color name="materialRed">#FFCDD2</color>
     <!-- Pink -->
-    <color name="materialDarkPink">#C2185B</color>
-    <color name="materialLightPink">#E91E63</color>
-    <color name="materialPink">#F8BBD0</color>
     <!-- Purple -->
-    <color name="materialDarkPurple">#7B1FA2</color>
-    <color name="materialLightPurple">#9C27B0</color>
-    <color name="materialPurple">#E1BEE7</color>
     <!-- DeepPurple -->
-    <color name="materialDarkDeepPurple">#512DA8</color>
-    <color name="materialLightDeepPurple">#673AB7</color>
-    <color name="materialDeepPurple">#D1C4E9</color>
     <!-- Indigo -->
-    <color name="materialDarkIndigo">#303F9F</color>
-    <color name="materialLightIndigo">#3F51B5</color>
-    <color name="materialIndigo">#C5CAE9</color>
     <!-- Blue -->
-    <color name="materialDarkBlue">#1976D2</color>
     <color name="materiaLightBlue">#2196F3</color>
-    <color name="materialBlue">#BBDEFB</color>
     <!-- SkyBlue -->
-    <color name="materialDarkSkyBlue">#0288D1</color>
-    <color name="materiaLightSkyBlue">#03A9F4</color>
-    <color name="materialSkyBlue">#B3E5FC</color>
     <!-- Cyan -->
-    <color name="materialDarkCyan">#0097A7</color>
-    <color name="materiaLightCyan">#00BCD4</color>
-    <color name="materialCyan">#B2EBF2</color>
     <!-- Teal -->
-    <color name="materialDarkTeal">#00796B</color>
-    <color name="materiaLightTeal">#009688</color>
-    <color name="materialTeal">#B2DFDB</color>
     <!-- Green -->
-    <color name="materialDarkGreen">#388E3C</color>
     <color name="materiaLightGreen">#4CAF50</color>
-    <color name="materialGreen">#C8E6C9</color>
     <!-- DeepGreen -->
-    <color name="materialDarkDeepGreen">#689F38</color>
-    <color name="materiaLightDeepGreen">#8BC34A</color>
-    <color name="materialDeepGreen">#DCEDC8</color>
     <!-- Lime -->
-    <color name="materialDarkLime">#AFB42B</color>
-    <color name="materiaLightLime">#CDDC39</color>
-    <color name="materialLime">#F0F4C3</color>
     <!-- Yellow -->
-    <color name="materialDarkYellow">#FBC02D</color>
-    <color name="materiaLightYellow">#FFEB3B</color>
-    <color name="materialYellow">#FFF9C4</color>
     <!-- Amber -->
-    <color name="materialDarkAmber">#FFA000</color>
-    <color name="materiaLightAmber">#FFC107</color>
-    <color name="materialAmber">#FFECB3</color>
     <!-- Orange -->
-    <color name="materialDarkOrange">#F57C00</color>
-    <color name="materiaLightOrange">#FF9800</color>
-    <color name="materialOrange">#FFE0B2</color>
     <!-- DeepOrange -->
-    <color name="materialDarkDeepOrange">#E64A19</color>
-    <color name="materiaLightDeepOrange">#FF5722</color>
-    <color name="materialDeepOrange">#FFCCBC</color>
     <!-- Brown -->
-    <color name="materialDarkBrown">#5D4037</color>
-    <color name="materiaLightBrown">#795548</color>
-    <color name="materialBrown">#D7CCC8</color>
     <!-- Grey -->
-    <color name="materialDarkGrey">#616161</color>
     <color name="materiaLightGrey">#9E9E9E</color>
     <color name="materialGrey">#F5F5F5</color>
     <!-- BlueGrey -->
-    <color name="materialDarkBlueGrey">#455A64</color>
-    <color name="materiaLightBlueGrey">#607D8B</color>
-    <color name="materialBluGrey">#CFD8DC</color>
     <!-- Black -->
-    <color name="materialDarkBlack">#212121</color>
-    <color name="materiaLightBlack">#757575</color>
-    <color name="materialBlack">#BDBDBD</color>
 
-    <color name="red">#FF5252</color>
     <color name="white">#FFFFFF</color>
-    <color name="black">#000000</color>
 
 </resources>

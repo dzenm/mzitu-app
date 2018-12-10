@@ -1,8 +1,9 @@
 package com.din.mzitu.utill;
 
 public class Url {
-    public static final String MZITU_HOT = "http://www.mzitu.com/hot/";
+    public static final String MZITU_NEW = "https://www.mzitu.com/";
     public static final String MZITU_BEST = "http://www.mzitu.com/best/";
+    public static final String MZITU_HOT = "http://www.mzitu.com/hot/";
     public static final String MZITU_SEXY = "http://www.mzitu.com/xinggan/";
     public static final String MZITU_JAPAN = "http://www.mzitu.com/japan/";
     public static final String MZITU_TAIWAN = "http://www.mzitu.com/taiwan/";

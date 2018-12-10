@@ -4,8 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 
-import com.din.mzitu.adapters.SeriesAdapter;
-import com.din.mzitu.adapters.ViewHolder;
+import com.din.mzitu.adapter.SeriesAdapter;
+import com.din.mzitu.adapter.ViewHolder;
 import com.din.mzitu.api.LiGui;
 import com.din.mzitu.base.BaseAdapter;
 import com.din.mzitu.base.BaseFragment;
@@ -15,6 +15,8 @@ import com.din.mzitu.ui.fragments.main.FragmentMzitu;
 import com.din.mzitu.ui.fragments.mzitu.FragmentContent;
 
 import java.util.List;
+
+import io.reactivex.ObservableEmitter;
 
 public class FragmentAll extends BaseFragment implements BaseAdapter.OnItemClickListener {
 
@@ -48,37 +50,29 @@ public class FragmentAll extends BaseFragment implements BaseAdapter.OnItemClick
     }
 
     @Override
-    protected List<SeriesBean> doInBackgroundTask(int page) {
+    protected void observableTask(ObservableEmitter emitter) {
         String url = getArguments().getString(SERIES);
-        return LiGui.getInstance().parseLiGuiMainData(page, url);
+        emitter.onNext(LiGui.getInstance().parseLiGuiMainData(++page, url));
     }
 
     @Override
-    protected void nextPageData(int position) {
-        adapter.setLoadingStatus(SeriesAdapter.LOADING_STATE_MORE);
+    protected void pagingData(int position) {
         adapter.setNotifyStart(position);
-        startAsyncTask(++page);
+        startAsyncTask();
     }
 
     @Override
     public SeriesAdapter getAdapter() {
-        if (adapter == null) {
-            adapter = new SeriesAdapter(getActivity());
-            adapter.setOnItemClickListener(this);
-        }
-        return adapter;
+        return new SeriesAdapter(this);
     }
 
     @Override
     public StaggeredGridLayoutManager getLayoutManager() {
-        if (layoutManager == null) {
-            layoutManager = new StaggeredGridLayoutManager(2, 1);
-        }
-        return layoutManager;
+        return new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
     }
 
     @Override
-    protected void postExecuteTask(Object p0) {
+    protected void observerData(Object p0) {
         if (page == 1) {
             seriesBeans = (List<SeriesBean>) p0;
         } else {

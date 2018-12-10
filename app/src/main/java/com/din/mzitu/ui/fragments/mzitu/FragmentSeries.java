@@ -3,9 +3,10 @@ package com.din.mzitu.ui.fragments.mzitu;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.util.Log;
 
-import com.din.mzitu.adapters.SeriesAdapter;
-import com.din.mzitu.adapters.ViewHolder;
+import com.din.mzitu.adapter.SeriesAdapter;
+import com.din.mzitu.adapter.ViewHolder;
 import com.din.mzitu.api.Mzitu;
 import com.din.mzitu.base.BaseAdapter;
 import com.din.mzitu.base.BaseFragment;
@@ -14,6 +15,8 @@ import com.din.mzitu.ui.activities.ContentActivity;
 import com.din.mzitu.ui.fragments.main.FragmentMzitu;
 
 import java.util.List;
+
+import io.reactivex.ObservableEmitter;
 
 public class FragmentSeries extends BaseFragment implements BaseAdapter.OnItemClickListener {
 
@@ -55,43 +58,35 @@ public class FragmentSeries extends BaseFragment implements BaseAdapter.OnItemCl
     }
 
     @Override
-    protected List<SeriesBean> doInBackgroundTask(int page) {
+    protected void observableTask(ObservableEmitter emitter) {
         // 获取页面加载的url
         String url = getArguments().getString(SERIES);
-        return Mzitu.getInstance().parseMzituMainData(page, url);
+        emitter.onNext(Mzitu.getInstance().parseMzituMainData(page++, url));
     }
 
     @Override
-    protected void nextPageData(int position) {
+    protected void pagingData(int position) {
         adapter.setNotifyStart(position);
-        adapter.setLoadingStatus(SeriesAdapter.LOADING_STATE_RUNNING);
-        startAsyncTask(++page);
+        startAsyncTask();
     }
 
     @Override
     public SeriesAdapter getAdapter() {
-        return new SeriesAdapter(getActivity());
+        return new SeriesAdapter(this);
     }
 
     @Override
     public StaggeredGridLayoutManager getLayoutManager() {
         StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        // 解决屏闪
         layoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_NONE);
         return layoutManager;
     }
 
     @Override
-    protected void postExecuteTask(Object p0) {
-        if (p0 != null) {
-            if (!isFetchPrepared) {
-                isFetchPrepared = true;
-            }
-            listBeans.addAll((List<SeriesBean>) p0);
-            adapter.addBeanData(listBeans);
-        } else {
-            // 返回为空解析失败或没有更多数据时不再加载数据
-            isFetchDataAll = true;
-        }
+    protected void observerData(Object p0) {
+        listBeans.addAll((List<SeriesBean>) p0);
+        adapter.addBeanData(listBeans);
         swipeRefresh.setRefreshing(false);          // 获取数据之后，刷新停止
     }
 
