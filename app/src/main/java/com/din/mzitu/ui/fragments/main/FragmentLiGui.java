@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 
 import com.din.mzitu.R;
 import com.din.mzitu.adapter.TabLayoutAdapter;
-import com.din.mzitu.ui.fragments.ligui.FragmentAll;
+import com.din.mzitu.ui.fragments.ligui.FragmentPost;
 import com.din.mzitu.utill.Url;
 
 import java.util.ArrayList;
@@ -25,7 +25,7 @@ public class FragmentLiGui extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        View view = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_series, null);
+        View view = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_main, null);
         Toolbar toolbar = view.findViewById(R.id.toolbar);
 
         toolbar.setTitle("丽柜图");
@@ -37,21 +37,21 @@ public class FragmentLiGui extends Fragment {
         ViewPager viewPager = view.findViewById(R.id.viewpager);
 
         List<Fragment> fragments = new ArrayList<>();
-        fragments.add(FragmentAll.newInstance(Url.LIGUI_NEW, FragmentSelf.PAGE_ONE));
-        fragments.add(FragmentAll.newInstance(Url.LIGUI_IMISS));
-        fragments.add(FragmentAll.newInstance(Url.LIGUI_UXING));
-        fragments.add(FragmentAll.newInstance(Url.LIGUI_UGIRLS));
-        fragments.add(FragmentAll.newInstance(Url.LIGUI_YOUWU));
-        fragments.add(FragmentAll.newInstance(Url.LIGUI_FEILIN));
-        fragments.add(FragmentAll.newInstance(Url.LIGUI_XINGLEYUAN));
-        fragments.add(FragmentAll.newInstance(Url.LIGUI_LOLI));
-        fragments.add(FragmentAll.newInstance(Url.LIGUI_MISTAR));
-        fragments.add(FragmentAll.newInstance(Url.LIGUI_TUIGIRLS));
-        fragments.add(FragmentAll.newInstance(Url.LIGUI_MFSTAR));
-        fragments.add(FragmentAll.newInstance(Url.LIGUI_WINGS));
-        fragments.add(FragmentAll.newInstance(Url.LIGUI_QINGDOUKE));
-        fragments.add(FragmentAll.newInstance(Url.LIGUI_LEGBABY));
-        fragments.add(FragmentAll.newInstance(Url.LIGUI_ROSI));
+        fragments.add(FragmentPost.newInstance(Url.LIGUI_NEW, FragmentPostSelf.PAGE_ONE));
+        fragments.add(FragmentPost.newInstance(Url.LIGUI_IMISS));
+        fragments.add(FragmentPost.newInstance(Url.LIGUI_UXING));
+        fragments.add(FragmentPost.newInstance(Url.LIGUI_UGIRLS));
+        fragments.add(FragmentPost.newInstance(Url.LIGUI_YOUWU));
+        fragments.add(FragmentPost.newInstance(Url.LIGUI_FEILIN));
+        fragments.add(FragmentPost.newInstance(Url.LIGUI_XINGLEYUAN));
+        fragments.add(FragmentPost.newInstance(Url.LIGUI_LOLI));
+        fragments.add(FragmentPost.newInstance(Url.LIGUI_MISTAR));
+        fragments.add(FragmentPost.newInstance(Url.LIGUI_TUIGIRLS));
+        fragments.add(FragmentPost.newInstance(Url.LIGUI_MFSTAR));
+        fragments.add(FragmentPost.newInstance(Url.LIGUI_WINGS));
+        fragments.add(FragmentPost.newInstance(Url.LIGUI_QINGDOUKE));
+        fragments.add(FragmentPost.newInstance(Url.LIGUI_LEGBABY));
+        fragments.add(FragmentPost.newInstance(Url.LIGUI_ROSI));
 
         List<String> titles = new ArrayList<>();
         titles.add("最新美图");

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,17 +32,12 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<RecyclerView.V
     public final static int TYPE_MZITU = 21;
     public final static int TYPE_LIGUI = 22;
 
-    public final static int LOADING_STATE_RUNNING = 31;
-    public final static int LOADING_STATE_MORE = 32;
-    public final static int LOADING_STATE_FINISH = 33;
-
     public static final String HEADER_MZITU = "http://www.mzitu.com/all/";
     public static final String HEADER_LIGUI = "http://www.ligui.org/";
 
     protected List<T> beans;
     protected OnItemClickListener onItemClickListener;
     protected Fragment fragment;
-    protected int loadingStatus = 0;
     private int notifyStart = 0;
 
     public BaseAdapter(Fragment fragment) {
@@ -61,11 +55,6 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<RecyclerView.V
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
-    }
-
-    public void setLoadingStatus(int loadingStatus) {
-        this.loadingStatus = loadingStatus;
-
     }
 
     protected abstract int layoutContentID();
@@ -119,6 +108,8 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<RecyclerView.V
         } else if (viewType == ITEM_TYPE_FOOT) {
             View view = LayoutInflater.from(context).inflate(layoutFootID(), parent, false);
             FootViewHolder viewHolder = new FootViewHolder(view);
+            TextView tipText = viewHolder.get(R.id.tipText);
+            tipText.setText(R.string.loading_status_running);
             return viewHolder;
         }
         return null;
@@ -151,9 +142,7 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<RecyclerView.V
             ((ViewGroup) holder.itemView).setLayoutAnimation(controller);
         } else if (holder instanceof FootViewHolder) {
             FootViewHolder viewHolder = (FootViewHolder) holder;
-            TextView tipText = viewHolder.get(R.id.tipText);
-            tipText.setText(loadingStatus == LOADING_STATE_RUNNING ? R.string.loading_status_running :
-                    loadingStatus == LOADING_STATE_FINISH ? R.string.loading_status_finish : R.string.loading_status_more);
+
         }
     }
 

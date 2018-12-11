@@ -13,8 +13,8 @@ import android.view.ViewGroup;
 import com.din.mzitu.R;
 import com.din.mzitu.adapter.TabLayoutAdapter;
 import com.din.mzitu.ui.fragments.mzitu.FragmentMain;
-import com.din.mzitu.ui.fragments.mzitu.FragmentSeries;
-import com.din.mzitu.ui.fragments.mzitu.FragmentUpdate;
+import com.din.mzitu.ui.fragments.mzitu.FragmentPostAll;
+import com.din.mzitu.ui.fragments.mzitu.FragmentPostDate;
 import com.din.mzitu.utill.Url;
 
 import java.util.ArrayList;
@@ -27,7 +27,7 @@ public class FragmentMzitu extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        View view = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_series, null);
+        View view = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_main, null);
         Toolbar toolbar = view.findViewById(R.id.toolbar);
         toolbar.setTitle("妹子图");
         return view;
@@ -42,11 +42,11 @@ public class FragmentMzitu extends Fragment {
 
         List<Fragment> list = new ArrayList<>();
         list.add(new FragmentMain());
-        list.add(FragmentSeries.newInstance(Url.MZITU_SEXY));
-        list.add(FragmentSeries.newInstance(Url.MZITU_JAPAN));
-        list.add(FragmentSeries.newInstance(Url.MZITU_TAIWAN));
-        list.add(FragmentSeries.newInstance(Url.MZITU_PURE));
-        list.add(FragmentUpdate.newInstance(Url.MZITU_DAYUPDATE));
+        list.add(FragmentPostAll.newInstance(Url.MZITU_SEXY));
+        list.add(FragmentPostAll.newInstance(Url.MZITU_JAPAN));
+        list.add(FragmentPostAll.newInstance(Url.MZITU_TAIWAN));
+        list.add(FragmentPostAll.newInstance(Url.MZITU_PURE));
+        list.add(FragmentPostDate.newInstance(Url.MZITU_DAYUPDATE));
 
         List<String> titles = new ArrayList<>();
         titles.add("主页");

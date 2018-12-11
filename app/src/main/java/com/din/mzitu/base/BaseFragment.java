@@ -13,6 +13,7 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.din.mzitu.R;
 import com.din.mzitu.adapter.ViewHolder;
@@ -35,8 +36,9 @@ public abstract class BaseFragment<T> extends Fragment implements SwipeRefreshLa
 
     private RecyclerView recyclerView;
     protected SwipeRefreshLayout swipeRefresh;
+
     protected BaseAdapter adapter;
-    protected List<T> listBeans;
+    protected List listBeans;
 
     protected int page = 1;                          // 加载的页数
     protected boolean isFetchDataAll = false;        // 页数是否全部完成
@@ -118,7 +120,7 @@ public abstract class BaseFragment<T> extends Fragment implements SwipeRefreshLa
      * @return
      */
     protected int layoutID() {
-        return R.layout.fragment_content;
+        return R.layout.fragment_post_rv;
     }
 
     /**
@@ -171,7 +173,7 @@ public abstract class BaseFragment<T> extends Fragment implements SwipeRefreshLa
                         if (!isFetchDataAll) {
                             pagingData(lastPosition);
                         } else {
-                            adapter.setLoadingStatus(BaseAdapter.LOADING_STATE_FINISH);
+                            Toast.makeText(getActivity(), "已经滑到底了", Toast.LENGTH_SHORT).show();
                         }
                     }
                 }
@@ -179,6 +181,7 @@ public abstract class BaseFragment<T> extends Fragment implements SwipeRefreshLa
 
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
                 // 得到当前显示的最后一个item的view
                 View lastChildView = recyclerView.getLayoutManager().getChildAt(recyclerView.getLayoutManager().getChildCount() - 1);
                 // 得到lastChildView的bottom坐标值
@@ -193,7 +196,6 @@ public abstract class BaseFragment<T> extends Fragment implements SwipeRefreshLa
                 if (lastChildBottom == recyclerBottom && lastPosition == recyclerView.getLayoutManager().getItemCount() - 1) {
                 }
             }
-
         });
 
         FloatingActionButton actionButton = view.findViewById(R.id.floatbtn);
@@ -247,14 +249,12 @@ public abstract class BaseFragment<T> extends Fragment implements SwipeRefreshLa
             if (!isFetchPrepared) {
                 isFetchPrepared = true;
             }
-            adapter.setLoadingStatus(BaseAdapter.LOADING_STATE_MORE);
             observerData((T) p0);
         }
 
         @Override
         public void onError(Throwable e) {
             if (e != null) {
-                adapter.setLoadingStatus(BaseAdapter.LOADING_STATE_FINISH);
                 isFetchDataAll = true;      // 返回为空解析失败或没有更多数据时不再加载数据
             }
         }

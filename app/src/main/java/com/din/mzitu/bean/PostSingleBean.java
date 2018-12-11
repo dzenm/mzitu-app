@@ -1,15 +1,13 @@
 package com.din.mzitu.bean;
 
-public class SeriesBean {
+public class PostSingleBean {
 
     private int type;
-    private String url;
     private String image;
     private String title;
 
-    public SeriesBean(int type, String url, String image, String title) {
+    public PostSingleBean(int type, String image, String title) {
         this.type = type;
-        this.url = url;
         this.image = image;
         this.title = title;
     }
@@ -20,14 +18,6 @@ public class SeriesBean {
 
     public void setType(int type) {
         this.type = type;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
     }
 
     public String getImage() {
@@ -45,4 +35,4 @@ public class SeriesBean {
     public void setTitle(String title) {
         this.title = title;
     }
-}
+} 

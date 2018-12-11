@@ -27,9 +27,9 @@ public class FragmentMain extends Fragment {
         TabLayout tabLayout = view.findViewById(R.id.tablayout);
 
         List<Fragment> list = new ArrayList<>();
-        list.add(FragmentSeries.newInstance(Url.MZITU_NEW, FragmentSeries.PAGE_ONE));
-        list.add(FragmentSeries.newInstance(Url.MZITU_BEST));
-        list.add(FragmentSeries.newInstance(Url.MZITU_HOT));
+        list.add(FragmentPostAll.newInstance(Url.MZITU_NEW, FragmentPostAll.PAGE_ONE));
+        list.add(FragmentPostAll.newInstance(Url.MZITU_BEST));
+        list.add(FragmentPostAll.newInstance(Url.MZITU_HOT));
         List<String> titles = new ArrayList<>();
         titles.add("最新");
         titles.add("推荐");

@@ -2,11 +2,11 @@ package com.din.mzitu.api;
 
 import android.util.Log;
 
-import com.din.mzitu.adapter.ContentAdapter;
-import com.din.mzitu.adapter.SeriesAdapter;
+import com.din.mzitu.adapter.PostSingleAdapter;
+import com.din.mzitu.adapter.PostAllAdapter;
 import com.din.mzitu.base.BaseApi;
-import com.din.mzitu.bean.ContentBean;
-import com.din.mzitu.bean.SeriesBean;
+import com.din.mzitu.bean.PostSingleBean;
+import com.din.mzitu.bean.PostAllBean;
 
 import org.jsoup.select.Elements;
 
@@ -36,8 +36,8 @@ public final class LiGui extends BaseApi {
      * @param webURL
      * @return
      */
-    public List<SeriesBean> parseLiGuiMainData(int page, String webURL) {
-        List<SeriesBean> seriesBeans = new ArrayList<>();
+    public List<PostAllBean> parseLiGuiMainData(int page, String webURL) {
+        List<PostAllBean> postAllBeans = new ArrayList<>();
         Elements elements = selectElements(webURL, "div.boxs", "li");
         Log.d("DZY", "size: " + elements.size());
         for (int i = 0; i < elements.size(); i++) {
@@ -45,13 +45,13 @@ public final class LiGui extends BaseApi {
             String image = elements.get(i).select("img").attr("src");
             String title = elements.get(i).select("img").attr("alt");
             Log.d("DZY", "url: " + url);
-            seriesBeans.add(new SeriesBean(SeriesAdapter.TYPE_LIGUI, url, image, title));
+            postAllBeans.add(new PostAllBean(PostAllAdapter.TYPE_LIGUI, url, image, title));
         }
-        return seriesBeans;
+        return postAllBeans;
     }
 
-    public List<ContentBean> parseLiGuiContentData(int page, String webURL) {
-        List<ContentBean> contentBeans = new ArrayList<>();
+    public List<PostSingleBean> parseLiGuiContentData(int page, String webURL) {
+        List<PostSingleBean> postSingleBeans = new ArrayList<>();
         Elements element = selectElements(webURL, "div[id=pages]", "a");
         int position = position(element, 2);
         webURL = webURL.substring(0, webURL.length() - 5);
@@ -65,9 +65,9 @@ public final class LiGui extends BaseApi {
             for (int j = 0; j < elements.size(); j++) {
                 String title = elements.get(j).select("img").attr("alt");
                 String url = elements.get(j).select("img").attr("src");
-                contentBeans.add(new ContentBean(ContentAdapter.TYPE_LIGUI, url, title));
+                postSingleBeans.add(new PostSingleBean(PostSingleAdapter.TYPE_LIGUI, url, title));
             }
         }
-        return contentBeans;
+        return postSingleBeans;
     }
 }

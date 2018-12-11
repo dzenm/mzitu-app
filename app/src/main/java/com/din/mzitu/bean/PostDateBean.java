@@ -1,10 +1,10 @@
 package com.din.mzitu.bean;
 
-public class UpdateBean {
+public class PostDateBean {
     private String title;
     private String url;
 
-    public UpdateBean(String title, String url) {
+    public PostDateBean(String title, String url) {
         this.title = title;
         this.url = url;
     }

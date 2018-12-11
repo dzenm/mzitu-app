@@ -1,11 +1,11 @@
 package com.din.mzitu.api;
 
-import com.din.mzitu.adapter.ContentAdapter;
-import com.din.mzitu.adapter.SeriesAdapter;
+import com.din.mzitu.adapter.PostSingleAdapter;
+import com.din.mzitu.adapter.PostAllAdapter;
 import com.din.mzitu.base.BaseApi;
-import com.din.mzitu.bean.ContentBean;
-import com.din.mzitu.bean.SeriesBean;
-import com.din.mzitu.bean.UpdateBean;
+import com.din.mzitu.bean.PostSingleBean;
+import com.din.mzitu.bean.PostAllBean;
+import com.din.mzitu.bean.PostDateBean;
 
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -50,8 +50,8 @@ public final class Mzitu extends BaseApi {
      * @param webURL
      * @return
      */
-    public List<SeriesBean> parseMzituMainData(int page, String webURL) {
-        List<SeriesBean> seriesBeans = new ArrayList<>();
+    public List<PostAllBean> parseMzituMainData(int page, String webURL) {
+        List<PostAllBean> postAllBeans = new ArrayList<>();
         // 获取页面显示的页数
         Elements pageElements = selectElements(webURL, "nav.navigation", "a.page-numbers");
         if (pageElements != null) {
@@ -66,10 +66,10 @@ public final class Mzitu extends BaseApi {
                     String url = elements.get(i).select("a").attr("href");
                     String image = elements.get(i).select("img").attr("data-original");
                     String title = elements.get(i).select("img").attr("alt");
-                    seriesBeans.add(new SeriesBean(SeriesAdapter.TYPE_MZITU, url, image, title));     // 将获取到的内容放在List里
+                    postAllBeans.add(new PostAllBean(PostAllAdapter.TYPE_MZITU, url, image, title));     // 将获取到的内容放在List里
                 }
                 // 请求页数小于总页数返回请求的数据
-                return seriesBeans;
+                return postAllBeans;
             }
             // 请求页数超过总页数返回空
             return null;
@@ -83,8 +83,8 @@ public final class Mzitu extends BaseApi {
      * @param webURL
      * @return
      */
-    public List<ContentBean> parseMzituContentData(int page, String webURL) {
-        List<ContentBean> contentBeans = new ArrayList<>();
+    public List<PostSingleBean> parseMzituContentData(int page, String webURL) {
+        List<PostSingleBean> postSingleBeans = new ArrayList<>();
         Elements elements = selectElements(webURL, "div.pagenavi", "span");     // 分析网页的内容
         // 获取图片总数
         int pages = position(elements, 2);
@@ -101,10 +101,10 @@ public final class Mzitu extends BaseApi {
                 Elements inform = selectElements(webURL + "/" + i, "div.main-meta", "span");
                 String informs = inform.get(0).text() + "  " + inform.get(1).text() + "  " + inform.get(2).text() + "  ";
                 String url = element.attr("src");
-                contentBeans.add(new ContentBean(ContentAdapter.TYPE_MZITU, url, informs));     // 将获取到的内容放在List里
+                postSingleBeans.add(new PostSingleBean(PostSingleAdapter.TYPE_MZITU, url, informs));     // 将获取到的内容放在List里
             }
             // 请求页数小于总页数返回请求的数据
-            return contentBeans;
+            return postSingleBeans;
         } else {
             // 请求页数超过总页数返回空
             return null;
@@ -117,8 +117,8 @@ public final class Mzitu extends BaseApi {
      * @param webURL
      * @return
      */
-    public List<UpdateBean> parseMzituUpdateData(int page, String webURL) {
-        List<UpdateBean> updateBeans = new ArrayList<>();
+    public List<PostDateBean> parseMzituUpdateData(int page, String webURL) {
+        List<PostDateBean> postDateBeans = new ArrayList<>();
         // 获取总的月份
         Elements elements = selectElements(webURL, "div.all", "ul.archives", "li");
         if (page < elements.size()) {   // 当请求的页数小于总的年份去请求新的数据
@@ -126,10 +126,10 @@ public final class Mzitu extends BaseApi {
             for (int j = 0; j < nextElements.size(); j++) {
                 String title = nextElements.get(j).text();
                 String url = nextElements.get(j).attr("href");
-                updateBeans.add(new UpdateBean(title, url));     // 将获取到的内容放在List里
+                postDateBeans.add(new PostDateBean(title, url));     // 将获取到的内容放在List里
             }
             // 请求页数小于总页数返回请求的数据
-            return updateBeans;
+            return postDateBeans;
         }
         // 请求页数超过总页数返回空
         return null;
@@ -141,8 +141,8 @@ public final class Mzitu extends BaseApi {
      * @param webURL
      * @return
      */
-    public List<ContentBean> parseMzituSelfData(int page, String webURL) {
-        List<ContentBean> contentBeans = new ArrayList<>();
+    public List<PostSingleBean> parseMzituSelfData(int page, String webURL) {
+        List<PostSingleBean> postSingleBeans = new ArrayList<>();
         Elements elements = selectElements(webURL, "div.pagenavi-cm", "span.current");     // 分析网页的内容
         int pages = Integer.valueOf(elements.get(elements.size() - 1).text());
         if (pages >= page) {
@@ -151,11 +151,11 @@ public final class Mzitu extends BaseApi {
             for (int j = 0; j < pageElement.size(); j++) {
                 String url = pageElement.get(j).select("img").attr("src");
                 String title = pageElement.get(j).select("div.comment-meta").select("a").text();
-                contentBeans.add(new ContentBean(ContentAdapter.TYPE_MZITU, url, title));
+                postSingleBeans.add(new PostSingleBean(PostSingleAdapter.TYPE_MZITU, url, title));
                 // 将获取到的内容放在List里
             }
             // 请求页数小于总页数返回请求的数据
-            return contentBeans;
+            return postSingleBeans;
         }
         // 请求页数超过总页数返回空
         return null;

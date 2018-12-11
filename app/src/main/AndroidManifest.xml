@@ -28,8 +28,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.activities.ContentActivity" />
-        <activity android:name=".ui.activities.PictureActivity" />
+        <activity android:name=".ui.activities.PostSingleActivity" />
+        <activity android:name=".ui.activities.PictureSingleActivity" />
     </application>
 
 </manifest>

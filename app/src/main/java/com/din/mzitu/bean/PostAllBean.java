@@ -1,13 +1,15 @@
 package com.din.mzitu.bean;
 
-public class ContentBean {
+public class PostAllBean {
 
     private int type;
+    private String url;
     private String image;
     private String title;
 
-    public ContentBean(int type, String image, String title) {
+    public PostAllBean(int type, String url, String image, String title) {
         this.type = type;
+        this.url = url;
         this.image = image;
         this.title = title;
     }
@@ -18,6 +20,14 @@ public class ContentBean {
 
     public void setType(int type) {
         this.type = type;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     public String getImage() {
@@ -35,4 +45,4 @@ public class ContentBean {
     public void setTitle(String title) {
         this.title = title;
     }
-} 
+}

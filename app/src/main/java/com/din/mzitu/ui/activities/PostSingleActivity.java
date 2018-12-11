@@ -7,24 +7,24 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.din.mzitu.R;
-import com.din.mzitu.ui.fragments.mzitu.FragmentContent;
+import com.din.mzitu.ui.fragments.mzitu.FragmentPostSingle;
 
-public class ContentActivity extends AppCompatActivity {
+public class PostSingleActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_content);
+        setContentView(R.layout.activity_single_post);
         Toolbar toolbar = findViewById(R.id.toolbar);
 
-        String title = getIntent().getStringExtra(FragmentContent.CONTENT_TITLE);      // 获取上个页面传过来的数据
+        String title = getIntent().getStringExtra(FragmentPostSingle.POST_TITLE);      // 获取上个页面传过来的数据
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(title);        // 设置标题
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        FragmentContent fragmentSelf = FragmentContent.newInstance(title, 1);
+        FragmentPostSingle fragmentSelf = FragmentPostSingle.newInstance(title, 1);
         transaction.add(R.id.framelayout, fragmentSelf);
         transaction.show(fragmentSelf).commit();        // 切换Fragment
     }

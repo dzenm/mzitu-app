@@ -4,43 +4,43 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 
-import com.din.mzitu.adapter.SeriesAdapter;
+import com.din.mzitu.adapter.PostAllAdapter;
 import com.din.mzitu.adapter.ViewHolder;
 import com.din.mzitu.api.LiGui;
 import com.din.mzitu.base.BaseAdapter;
 import com.din.mzitu.base.BaseFragment;
-import com.din.mzitu.bean.SeriesBean;
-import com.din.mzitu.ui.activities.ContentActivity;
+import com.din.mzitu.bean.PostAllBean;
+import com.din.mzitu.ui.activities.PostSingleActivity;
 import com.din.mzitu.ui.fragments.main.FragmentMzitu;
-import com.din.mzitu.ui.fragments.mzitu.FragmentContent;
+import com.din.mzitu.ui.fragments.mzitu.FragmentPostSingle;
 
 import java.util.List;
 
 import io.reactivex.ObservableEmitter;
 
-public class FragmentAll extends BaseFragment implements BaseAdapter.OnItemClickListener {
+public class FragmentPost extends BaseFragment implements BaseAdapter.OnItemClickListener {
 
-    public static final String SERIES = "series";
+    public static final String POST_ALL = "post_all";
     public static final String POSITION = "position";
     private StaggeredGridLayoutManager layoutManager;
-    private SeriesAdapter adapter;
-    private List<SeriesBean> seriesBeans;
+    private PostAllAdapter adapter;
+    private List<PostAllBean> postAllBeans;
 
-    public static FragmentAll newInstance(String url) {
+    public static FragmentPost newInstance(String url) {
         Bundle bundle = new Bundle();
-        bundle.putString(SERIES, url);
-        FragmentAll fragmentAll = new FragmentAll();
-        fragmentAll.setArguments(bundle);
-        return fragmentAll;
+        bundle.putString(POST_ALL, url);
+        FragmentPost fragmentPost = new FragmentPost();
+        fragmentPost.setArguments(bundle);
+        return fragmentPost;
     }
 
-    public static FragmentAll newInstance(String url, int position) {
+    public static FragmentPost newInstance(String url, int position) {
         Bundle bundle = new Bundle();
-        bundle.putString(SERIES, url);
+        bundle.putString(POST_ALL, url);
         bundle.putInt(POSITION, position);
-        FragmentAll fragmentAll = new FragmentAll();
-        fragmentAll.setArguments(bundle);
-        return fragmentAll;
+        FragmentPost fragmentPost = new FragmentPost();
+        fragmentPost.setArguments(bundle);
+        return fragmentPost;
     }
 
     @Override
@@ -51,7 +51,7 @@ public class FragmentAll extends BaseFragment implements BaseAdapter.OnItemClick
 
     @Override
     protected void observableTask(ObservableEmitter emitter) {
-        String url = getArguments().getString(SERIES);
+        String url = getArguments().getString(POST_ALL);
         emitter.onNext(LiGui.getInstance().parseLiGuiMainData(++page, url));
     }
 
@@ -62,8 +62,8 @@ public class FragmentAll extends BaseFragment implements BaseAdapter.OnItemClick
     }
 
     @Override
-    public SeriesAdapter getAdapter() {
-        return new SeriesAdapter(this);
+    public PostAllAdapter getAdapter() {
+        return new PostAllAdapter(this);
     }
 
     @Override
@@ -74,21 +74,21 @@ public class FragmentAll extends BaseFragment implements BaseAdapter.OnItemClick
     @Override
     protected void observerData(Object p0) {
         if (page == 1) {
-            seriesBeans = (List<SeriesBean>) p0;
+            postAllBeans = (List<PostAllBean>) p0;
         } else {
-            seriesBeans.addAll((List<SeriesBean>) p0);
+            postAllBeans.addAll((List<PostAllBean>) p0);
         }
-        adapter.addBeanData(seriesBeans);
+        adapter.addBeanData(postAllBeans);
         swipeRefresh.setRefreshing(false);          // 获取数据之后，刷新停止
     }
 
     @Override
     public void onItemClick(ViewHolder holder, int position) {
-        SeriesBean bean = seriesBeans.get(position - 1);         // 获取数据的item
-        Intent intent = new Intent(getActivity(), ContentActivity.class);
-        intent.putExtra(FragmentContent.CONTENT_URL, bean.getUrl());      // 将URL和TITLE传递到下一个页面
-        intent.putExtra(FragmentContent.CONTENT_TITLE, bean.getTitle());
-        intent.putExtra(FragmentContent.CONTENT_WEBSITE, FragmentMzitu.MZITU);
+        PostAllBean bean = postAllBeans.get(position - 1);         // 获取数据的item
+        Intent intent = new Intent(getActivity(), PostSingleActivity.class);
+        intent.putExtra(FragmentPostSingle.POST_URL, bean.getUrl());      // 将URL和TITLE传递到下一个页面
+        intent.putExtra(FragmentPostSingle.POST_TITLE, bean.getTitle());
+        intent.putExtra(FragmentPostSingle.POST_WEBSITE, FragmentMzitu.MZITU);
         startActivity(intent);
     }
 }

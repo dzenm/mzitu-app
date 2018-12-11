@@ -25,7 +25,7 @@ import com.din.mzitu.utill.FileUtil;
 
 import java.io.IOException;
 
-public class PictureActivity extends AppCompatActivity {
+public class PictureSingleActivity extends AppCompatActivity {
 
     public static final String PICTURE_TITLE = "picture_title";
     public static final String PICTURE_IMAGE = "picture_image";
@@ -39,7 +39,7 @@ public class PictureActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_picture);
+        setContentView(R.layout.activity_single_picture);
 
         // 请求权限
         verifyPermissions(this);

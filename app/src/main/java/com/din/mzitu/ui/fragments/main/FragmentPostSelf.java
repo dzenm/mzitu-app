@@ -8,19 +8,19 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.din.mzitu.R;
-import com.din.mzitu.adapter.ContentAdapter;
+import com.din.mzitu.adapter.PostSingleAdapter;
 import com.din.mzitu.adapter.ViewHolder;
 import com.din.mzitu.api.Mzitu;
 import com.din.mzitu.base.BaseFragment;
-import com.din.mzitu.bean.ContentBean;
-import com.din.mzitu.ui.activities.PictureActivity;
+import com.din.mzitu.bean.PostSingleBean;
+import com.din.mzitu.ui.activities.PictureSingleActivity;
 import com.din.mzitu.utill.Url;
 
 import java.util.List;
 
 import io.reactivex.ObservableEmitter;
 
-public class FragmentSelf extends BaseFragment {
+public class FragmentPostSelf extends BaseFragment {
 
     @Override
     protected int getPageFragment() {
@@ -37,7 +37,7 @@ public class FragmentSelf extends BaseFragment {
 
     @Override
     protected int layoutID() {
-        return R.layout.fragment_self;
+        return R.layout.fragment_post_self;
     }
 
     @Override
@@ -52,8 +52,8 @@ public class FragmentSelf extends BaseFragment {
     }
 
     @Override
-    public ContentAdapter getAdapter() {
-        return new ContentAdapter(this);
+    public PostSingleAdapter getAdapter() {
+        return new PostSingleAdapter(this);
     }
 
     @Override
@@ -63,19 +63,18 @@ public class FragmentSelf extends BaseFragment {
 
     @Override
     protected void observerData(Object o) {
-        listBeans.addAll((List<ContentBean>) o);
+        listBeans.addAll((List<PostSingleBean>) o);
         adapter.addBeanData(listBeans);
-        adapter.setLoadingStatus(ContentAdapter.LOADING_STATE_MORE);
         swipeRefresh.setRefreshing(false);          // 获取数据之后，刷新停止
     }
 
     @Override
     public void onItemClick(ViewHolder holder, int position) {
-        ContentBean contentBean = (ContentBean) listBeans.get(position - 1);
-        Intent intent = new Intent(getActivity(), PictureActivity.class);
-        intent.putExtra(PictureActivity.PICTURE_TITLE, contentBean.getTitle());
-        intent.putExtra(PictureActivity.PICTURE_IMAGE, contentBean.getImage());
-        intent.putExtra(PictureActivity.PICTURE_POSITION, position - 1);
+        PostSingleBean postSingleBean = (PostSingleBean) listBeans.get(position - 1);
+        Intent intent = new Intent(getActivity(), PictureSingleActivity.class);
+        intent.putExtra(PictureSingleActivity.PICTURE_TITLE, postSingleBean.getTitle());
+        intent.putExtra(PictureSingleActivity.PICTURE_IMAGE, postSingleBean.getImage());
+        intent.putExtra(PictureSingleActivity.PICTURE_POSITION, position - 1);
         startActivity(intent, ActivityOptionsCompat.makeSceneTransitionAnimation
                 (getActivity(), holder.itemView, "transition_name_picture").toBundle());
         getActivity().overridePendingTransition(R.anim.zoom_in, R.anim.zoom_out);
