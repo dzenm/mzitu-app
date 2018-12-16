@@ -3,6 +3,7 @@ package com.din.mzitu.ui.fragments.mzitu;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
+import android.view.View;
 
 import com.din.mzitu.adapter.PostDateAdapter;
 import com.din.mzitu.adapter.ViewHolder;
@@ -21,11 +22,12 @@ public class FragmentPostDate extends BaseFragment implements BaseAdapter.OnItem
 
     public static final String POST_DATE = "post_date";
 
-    public static FragmentPostDate newInstance(String url) {
+    public static FragmentPostDate newInstance(View view, String url) {
         Bundle bundle = new Bundle();
         bundle.putString(POST_DATE, url);
         FragmentPostDate fragmentPostDate = new FragmentPostDate();
         fragmentPostDate.setArguments(bundle);
+        fragmentPostDate.rootView = view;
         return fragmentPostDate;
     }
 
@@ -33,12 +35,7 @@ public class FragmentPostDate extends BaseFragment implements BaseAdapter.OnItem
     protected void observableTask(ObservableEmitter emitter) {
         String url = getArguments().getString(POST_DATE);
         emitter.onNext(Mzitu.getInstance().parseMzituUpdateData(++page, url));
-    }
-
-    @Override
-    protected void pagingData(int position) {
-        adapter.setNotifyStart(position);
-        startAsyncTask();
+        emitter.onComplete();
     }
 
     @Override

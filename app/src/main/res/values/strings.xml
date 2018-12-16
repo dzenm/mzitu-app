@@ -1,8 +1,15 @@
 <resources>
     <string name="app_name">妹子图</string>
+
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+
+    <string name="drawer_nav_group_web">网址爬虫</string>
     <string name="drawer_nav_mzitu">妹子网</string>
     <string name="drawer_nav_ligui">丽柜网</string>
-    <string name="drawer_nav_xxoo">妹子自拍</string>
+    <string name="drawer_nav_group_others">其他</string>
+    <string name="drawer_nav_setting">设置</string>
+    <string name="drawer_nav_about">关于</string>
 
     <string name="transition_name_picture">transition_name_picture</string>
 

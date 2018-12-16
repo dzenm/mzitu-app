@@ -7,6 +7,7 @@ public class PostAllBean {
     private String image;
     private String title;
 
+
     public PostAllBean(int type, String url, String image, String title) {
         this.type = type;
         this.url = url;

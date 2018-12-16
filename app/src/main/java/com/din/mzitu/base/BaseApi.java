@@ -56,7 +56,7 @@ public class BaseApi {
             return elements;
         } catch (IOException e) {
             e.printStackTrace();
+            return null;
         }
-        return null;
     }
 }

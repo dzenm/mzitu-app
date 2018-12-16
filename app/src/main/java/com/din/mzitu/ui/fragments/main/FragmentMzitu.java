@@ -15,7 +15,7 @@ import com.din.mzitu.adapter.TabLayoutAdapter;
 import com.din.mzitu.ui.fragments.mzitu.FragmentMain;
 import com.din.mzitu.ui.fragments.mzitu.FragmentPostAll;
 import com.din.mzitu.ui.fragments.mzitu.FragmentPostDate;
-import com.din.mzitu.utill.Url;
+import com.din.mzitu.utill.ScreenHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,13 +24,21 @@ public class FragmentMzitu extends Fragment {
 
     public static final String MZITU = "MZITU";
 
+    public static final String SEXY = "http://www.mzitu.com/xinggan/";
+    public static final String JAPAN = "http://www.mzitu.com/japan/";
+    public static final String TAIWAN = "http://www.mzitu.com/taiwan/";
+    public static final String PURE = "http://www.mzitu.com/mm/";
+    public static final String DAYUPDATE = "http://www.mzitu.com/all/";
+    private View rootView;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        View view = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_main, null);
-        Toolbar toolbar = view.findViewById(R.id.toolbar);
-        toolbar.setTitle("妹子图");
-        return view;
+        rootView = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_main, null);
+        Toolbar toolbar = rootView.findViewById(R.id.toolbar);
+        toolbar.setTitle(R.string.drawer_nav_mzitu);
+        ScreenHelper.addDrawerLayoutToggle(getActivity(), toolbar);
+        return rootView;
     }
 
     @Override
@@ -41,23 +49,27 @@ public class FragmentMzitu extends Fragment {
         TabLayout tabLayout = view.findViewById(R.id.tablayout);
 
         List<Fragment> list = new ArrayList<>();
-        list.add(new FragmentMain());
-        list.add(FragmentPostAll.newInstance(Url.MZITU_SEXY));
-        list.add(FragmentPostAll.newInstance(Url.MZITU_JAPAN));
-        list.add(FragmentPostAll.newInstance(Url.MZITU_TAIWAN));
-        list.add(FragmentPostAll.newInstance(Url.MZITU_PURE));
-        list.add(FragmentPostDate.newInstance(Url.MZITU_DAYUPDATE));
+
+        list.add(FragmentMain.newInstance(rootView));
+        list.add(FragmentPostAll.newInstance(rootView, SEXY));
+        list.add(FragmentPostAll.newInstance(rootView, JAPAN));
+        list.add(FragmentPostAll.newInstance(rootView, TAIWAN));
+        list.add(FragmentPostAll.newInstance(rootView, PURE));
+        list.add(FragmentPostSelf.newInstance(rootView));
+        list.add(FragmentPostDate.newInstance(rootView, DAYUPDATE));
 
         List<String> titles = new ArrayList<>();
-        titles.add("主页");
+        titles.add("首页");
         titles.add("性感妹子");
         titles.add("日本妹子");
         titles.add("台湾妹子");
         titles.add("清纯妹子");
+        titles.add("妹子自拍");
         titles.add("每日更新");
 
         TabLayoutAdapter adapter = new TabLayoutAdapter(getChildFragmentManager(), list, titles);
         viewPager.setAdapter(adapter);
+        // 解决瀑布流空白卡顿
         viewPager.setOffscreenPageLimit(list.size());
         tabLayout.setupWithViewPager(viewPager);
     }

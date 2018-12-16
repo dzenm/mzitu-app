@@ -1,32 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#C2185B</color>
+    <color name="colorPrimary">#E91E63</color>
     <color name="colorPrimaryDark">#C2185B</color>
-    <color name="colorAccent">#757575</color>
-    <!-- Red -->
-    <!-- Pink -->
-    <!-- Purple -->
-    <!-- DeepPurple -->
-    <!-- Indigo -->
-    <!-- Blue -->
-    <color name="materiaLightBlue">#2196F3</color>
-    <!-- SkyBlue -->
-    <!-- Cyan -->
-    <!-- Teal -->
-    <!-- Green -->
-    <color name="materiaLightGreen">#4CAF50</color>
-    <!-- DeepGreen -->
-    <!-- Lime -->
-    <!-- Yellow -->
-    <!-- Amber -->
-    <!-- Orange -->
-    <!-- DeepOrange -->
-    <!-- Brown -->
-    <!-- Grey -->
-    <color name="materiaLightGrey">#9E9E9E</color>
-    <color name="materialGrey">#F5F5F5</color>
-    <!-- BlueGrey -->
-    <!-- Black -->
+    <color name="colorAccent">#03A9F4</color>
+
+    <color name="lightPrimary">#F8BBD0</color>
+    <color name="primaryText">#212121</color>
+    <color name="secondAryText">#757575</color>
+    <color name="divider">#BDBDBD</color>
+
+    <color name="gray">#F5F5F5</color>
 
     <color name="white">#FFFFFF</color>
 

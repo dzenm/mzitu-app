@@ -5,6 +5,11 @@
     android:gravity="center"
     android:orientation="horizontal">
 
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="20dp"
+        android:layout_height="20dp" />
+
     <TextView
         android:id="@+id/tipText"
         android:layout_width="wrap_content"

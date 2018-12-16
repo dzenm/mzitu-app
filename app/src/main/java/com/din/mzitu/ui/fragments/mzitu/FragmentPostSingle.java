@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 
 import com.din.mzitu.R;
@@ -17,17 +18,17 @@ import com.din.mzitu.bean.PostSingleBean;
 import com.din.mzitu.ui.activities.PictureSingleActivity;
 import com.din.mzitu.ui.fragments.main.FragmentLiGui;
 import com.din.mzitu.ui.fragments.main.FragmentMzitu;
+import com.din.mzitu.utill.BackToTopListener;
 
 import java.util.List;
 
 import io.reactivex.ObservableEmitter;
 
-public class FragmentPostSingle extends BaseFragment implements BaseAdapter.OnItemClickListener {
+public class FragmentPostSingle extends BaseFragment implements BaseAdapter.OnItemClickListener, BackToTopListener.BackToTopView {
 
     public static final String POST_URL = "post_url";
     public static final String POST_TITLE = "post_title";
     public static final String POST_WEBSITE = "post_website";
-
     public static final String POST_SELF = "self";
 
     public static final String POSITION = "position";
@@ -52,7 +53,6 @@ public class FragmentPostSingle extends BaseFragment implements BaseAdapter.OnIt
         return getArguments().getInt(POSITION);
     }
 
-
     @Override
     protected void observableTask(ObservableEmitter emitter) {
         // 获取页面加载的url
@@ -69,13 +69,10 @@ public class FragmentPostSingle extends BaseFragment implements BaseAdapter.OnIt
     }
 
     @Override
-    protected void pagingData(int position) {
-        adapter.setNotifyStart(position);
-        startAsyncTask();
-    }
-
-    @Override
     public PostSingleAdapter getAdapter() {
+        // 双击状态栏回到顶部
+        final Toolbar toolbar = getActivity().findViewById(R.id.toolbar);
+        toolbar.setOnClickListener(new BackToTopListener(this));
         return new PostSingleAdapter(this);
     }
 
@@ -87,7 +84,6 @@ public class FragmentPostSingle extends BaseFragment implements BaseAdapter.OnIt
     @Override
     protected void observerData(Object p0) {
         listBeans.addAll((List<PostSingleBean>) p0);
-        Log.d("DZY", "p0: " + ((List<PostSingleBean>) p0).size());
         adapter.addBeanData(listBeans);
         swipeRefresh.setRefreshing(false);          // 获取数据之后，刷新停止
     }
@@ -102,5 +98,10 @@ public class FragmentPostSingle extends BaseFragment implements BaseAdapter.OnIt
         startActivity(intent, ActivityOptionsCompat.makeSceneTransitionAnimation
                 (getActivity(), holder.itemView, "transition_name_picture").toBundle());
         getActivity().overridePendingTransition(R.anim.zoom_in, R.anim.zoom_out);
+    }
+
+    @Override
+    public void backToTop() {
+        recyclerView.smoothScrollToPosition(0);
     }
 }

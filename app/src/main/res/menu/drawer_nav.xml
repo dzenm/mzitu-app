@@ -1,20 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/mzitu"
-            android:title="@string/drawer_nav_mzitu"
-            app:showAsAction="always" />
+            android:icon="@drawable/ic_mzitu"
+            android:title="@string/drawer_nav_mzitu" />
         <item
             android:id="@+id/ligui"
-            android:title="@string/drawer_nav_ligui"
-            app:showAsAction="always" />
-        <item
-            android:id="@+id/xxoo"
-            android:title="@string/drawer_nav_xxoo"
-            app:showAsAction="always" />
-        
+            android:icon="@drawable/ic_ligui"
+            android:title="@string/drawer_nav_ligui" />
     </group>
-
+    <group android:checkableBehavior="single">
+        <item android:title="@string/drawer_nav_group_others">
+            <menu>
+                <item
+                    android:id="@+id/setting"
+                    android:icon="@drawable/ic_mzitu"
+                    android:title="@string/drawer_nav_setting" />
+                <item
+                    android:id="@+id/about"
+                    android:icon="@drawable/ic_ligui"
+                    android:title="@string/drawer_nav_about" />
+            </menu>
+        </item>
+    </group>
 </menu>

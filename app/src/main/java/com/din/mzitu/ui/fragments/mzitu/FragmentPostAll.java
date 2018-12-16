@@ -2,8 +2,11 @@ package com.din.mzitu.ui.fragments.mzitu;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.view.View;
 
+import com.din.mzitu.R;
 import com.din.mzitu.adapter.PostAllAdapter;
 import com.din.mzitu.adapter.ViewHolder;
 import com.din.mzitu.api.Mzitu;
@@ -17,7 +20,7 @@ import java.util.List;
 
 import io.reactivex.ObservableEmitter;
 
-public class FragmentPostAll extends BaseFragment implements BaseAdapter.OnItemClickListener {
+public class FragmentPostAll extends BaseFragment implements BaseAdapter.OnItemClickListener, View.OnClickListener {
 
     public static final String POST_ALL = "post_all";
     public static final String POSITION = "position";
@@ -25,29 +28,33 @@ public class FragmentPostAll extends BaseFragment implements BaseAdapter.OnItemC
     /**
      * 创建一个实例
      *
-     * @param url 爬取数据的url
+     * @param view
+     * @param url  爬取数据的url
      * @return
      */
-    public static FragmentPostAll newInstance(String url) {
+    public static FragmentPostAll newInstance(View view, String url) {
         Bundle bundle = new Bundle();
         bundle.putString(POST_ALL, url);
         bundle.putString(FragmentPostSingle.POST_WEBSITE, FragmentMzitu.MZITU);
         FragmentPostAll fragmentPostAll = new FragmentPostAll();
         fragmentPostAll.setArguments(bundle);
+        fragmentPostAll.rootView = view;
         return fragmentPostAll;
     }
 
     /**
+     * @param view
      * @param url
      * @param position
      * @return
      */
-    public static FragmentPostAll newInstance(String url, int position) {
+    public static FragmentPostAll newInstance(View view, String url, int position) {
         Bundle bundle = new Bundle();
         bundle.putString(POST_ALL, url);
         bundle.putInt(POSITION, position);
         FragmentPostAll fragmentPostAll = new FragmentPostAll();
         fragmentPostAll.setArguments(bundle);
+        fragmentPostAll.rootView = view;
         return fragmentPostAll;
     }
 
@@ -61,16 +68,15 @@ public class FragmentPostAll extends BaseFragment implements BaseAdapter.OnItemC
         // 获取页面加载的url
         String url = getArguments().getString(POST_ALL);
         emitter.onNext(Mzitu.getInstance().parseMzituMainData(page++, url));
-    }
-
-    @Override
-    protected void pagingData(int position) {
-        adapter.setNotifyStart(position);
-        startAsyncTask();
+        emitter.onComplete();
     }
 
     @Override
     public PostAllAdapter getAdapter() {
+        // 点击FloatingActionButton回到顶部
+        FloatingActionButton button = rootView.findViewById(R.id.floatbtn);
+        button.setOnClickListener(this);
+
         return new PostAllAdapter(this);
     }
 
@@ -86,7 +92,7 @@ public class FragmentPostAll extends BaseFragment implements BaseAdapter.OnItemC
     protected void observerData(Object p0) {
         listBeans.addAll((List<PostAllBean>) p0);
         adapter.addBeanData(listBeans);
-        swipeRefresh.setRefreshing(false);          // 获取数据之后，刷新停止
+        swipeRefresh.setRefreshing(false);          // 获取数据之后，刷新停止l
     }
 
     @Override
@@ -97,5 +103,10 @@ public class FragmentPostAll extends BaseFragment implements BaseAdapter.OnItemC
         intent.putExtra(FragmentPostSingle.POST_TITLE, bean.getTitle());
         intent.putExtra(FragmentPostSingle.POST_WEBSITE, FragmentMzitu.MZITU);
         startActivity(intent);
+    }
+
+    @Override
+    public void onClick(View v) {
+        recyclerView.smoothScrollToPosition(0);
     }
 }

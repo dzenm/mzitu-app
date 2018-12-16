@@ -6,22 +6,26 @@ import android.app.WallpaperManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Window;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.din.mzitu.R;
+import com.din.mzitu.utill.ColorUtil;
 import com.din.mzitu.utill.FileUtil;
+import com.din.mzitu.utill.GlideApp;
 
 import java.io.IOException;
 
@@ -33,6 +37,7 @@ public class PictureSingleActivity extends AppCompatActivity {
     private ImageView imageView;
     private String title;
     private Bitmap bitmap;
+    private Toolbar toolbar;
     private int position;
 
     @SuppressLint("RestrictedApi")
@@ -51,18 +56,47 @@ public class PictureSingleActivity extends AppCompatActivity {
         String image = intent.getStringExtra(PICTURE_IMAGE);
         position = intent.getIntExtra(PICTURE_POSITION, 0);
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle(title);
 
         imageView = findViewById(R.id.image);
 
-        Glide.with(this).asBitmap().load(image).into(new SimpleTarget<Bitmap>() {
+        // 加载图片
+        GlideApp.with(this)
+                .asBitmap()
+                .placeholder(R.drawable.placeholder)
+                .error(R.drawable.placeholder_error)
+                .load(image)
+                .into(new SimpleTarget<Bitmap>() {
+                    @Override
+                    public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                        bitmap = resource;
+                        imageView.setImageBitmap(bitmap);
+                    }
+                });
+        // 对图片拾色
+        Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
             @Override
-            public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-                bitmap = resource;
-                imageView.setImageBitmap(bitmap);
+            public void onGenerated(@NonNull Palette palette) {
+                Palette.Swatch vibrant = palette.getVibrantSwatch();
+                if (vibrant == null) {
+                    for (Palette.Swatch swatch : palette.getSwatches()) {
+                        vibrant = swatch;
+                        break;
+                    }
+                }
+                // 拾色成功，设置颜色
+                int rgb = vibrant.getRgb();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    Window window = getWindow();
+
+                    // 状态栏改变颜色
+                    int color = ColorUtil.changeColor(rgb);
+                    window.setStatusBarColor(color);
+                    toolbar.setBackgroundColor(color);
+                }
             }
         });
     }
@@ -98,26 +132,20 @@ public class PictureSingleActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                break;
-            case R.id.save:
-                if (bitmap != null) {
-                    boolean saveSuccess = FileUtil.savePhoto(bitmap, title, String.valueOf(position) + ".jpg");
-                    if (saveSuccess) {
-                        Toast.makeText(this, "保存成功", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(this, "保存失败", Toast.LENGTH_SHORT).show();
-                    }
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+        } else if (item.getItemId() == R.id.save) {
+            if (bitmap != null) {
+                boolean saveSuccess = FileUtil.savePhoto(bitmap, title, String.valueOf(position) + ".jpg");
+                if (saveSuccess) {
+                    Toast.makeText(this, "保存成功", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, "保存失败", Toast.LENGTH_SHORT).show();
                 }
-                break;
-            case R.id.set_desktop:
-                setWallpaper();
-                Toast.makeText(this, "设置成功", Toast.LENGTH_SHORT).show();
-                break;
-            default:
-                break;
+            }
+        } else if (item.getItemId() == R.id.set_desktop) {
+            setWallpaper();
+            Toast.makeText(this, "设置成功", Toast.LENGTH_SHORT).show();
         }
         return true;
     }

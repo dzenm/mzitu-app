@@ -14,7 +14,6 @@ import android.view.MenuItem;
 import com.din.mzitu.R;
 import com.din.mzitu.ui.fragments.main.FragmentLiGui;
 import com.din.mzitu.ui.fragments.main.FragmentMzitu;
-import com.din.mzitu.ui.fragments.main.FragmentPostSelf;
 import com.din.mzitu.utill.FragmentUtil;
 
 import java.util.ArrayList;
@@ -26,7 +25,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private NavigationView navigationView;
     private FragmentMzitu fragmentMzitu;
     private FragmentLiGui fragmentLiGui;
-    private FragmentPostSelf fragmentPostSelf;
     private List<Fragment> list;
     private FragmentUtil fragmentUtil;
 
@@ -41,14 +39,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawerLayout = findViewById(R.id.drawerlayout);
         navigationView = findViewById(R.id.navigation_view);
         navigationView.setNavigationItemSelectedListener(this);
+        navigationView.setItemIconTintList(null);
 
         fragmentMzitu = new FragmentMzitu();
         fragmentLiGui = new FragmentLiGui();
-        fragmentPostSelf = new FragmentPostSelf();
         list = new ArrayList<>();           // Fragment的add与切换
         fragmentUtil = new FragmentUtil(this, R.id.framelayout, list);
         fragmentUtil.showFragment(fragmentMzitu);
         navigationView.getMenu().getItem(0).setChecked(true);   // 选中的侧滑item着色
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
     }
 
     @Override
@@ -69,21 +72,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    switch (item.getItemId()) {
-                        case R.id.mzitu:
-                            fragmentUtil.hideFragment().showFragment(fragmentMzitu);
-                            navigationView.getMenu().getItem(0).setChecked(true);
-                            break;
-                        case R.id.ligui:
-                            fragmentUtil.hideFragment().showFragment(fragmentLiGui);
-                            navigationView.getMenu().getItem(1).setChecked(true);
-                            break;
-                        case R.id.xxoo:
-                            fragmentUtil.hideFragment().showFragment(fragmentPostSelf);
-                            navigationView.getMenu().getItem(2).setChecked(true);
-                            break;
-                        default:
-                            break;
+                    if (item.getItemId() == R.id.mzitu) {
+                        fragmentUtil.hideFragment().showFragment(fragmentMzitu);
+                        navigationView.getMenu().getItem(0).setChecked(true);
+                    } else if (item.getItemId() == R.id.ligui) {
+                        fragmentUtil.hideFragment().showFragment(fragmentLiGui);
+                        navigationView.getMenu().getItem(1).setChecked(true);
                     }
                 }
             }, 300);

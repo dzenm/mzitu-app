@@ -12,73 +12,89 @@ import android.view.ViewGroup;
 
 import com.din.mzitu.R;
 import com.din.mzitu.adapter.TabLayoutAdapter;
+import com.din.mzitu.api.LiGui;
 import com.din.mzitu.ui.fragments.ligui.FragmentPost;
-import com.din.mzitu.utill.Url;
+import com.din.mzitu.utill.ScreenHelper;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+
 public class FragmentLiGui extends Fragment {
 
     public static final String LIGUI = "LIGUI";
+    public static final String INDEX = "http://www.ligui.org/index.html";
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_main, null);
         Toolbar toolbar = view.findViewById(R.id.toolbar);
-
-        toolbar.setTitle("丽柜图");
+        toolbar.setTitle(R.string.drawer_nav_ligui);
+        ScreenHelper.addDrawerLayoutToggle(getActivity(), toolbar);
+        initView(view);
         return view;
     }
 
     private void initView(View view) {
-        TabLayout tabLayout = view.findViewById(R.id.tablayout);
-        ViewPager viewPager = view.findViewById(R.id.viewpager);
+        final TabLayout tabLayout = view.findViewById(R.id.tablayout);
+        final ViewPager viewPager = view.findViewById(R.id.viewpager);
 
-        List<Fragment> fragments = new ArrayList<>();
-        fragments.add(FragmentPost.newInstance(Url.LIGUI_NEW, FragmentPostSelf.PAGE_ONE));
-        fragments.add(FragmentPost.newInstance(Url.LIGUI_IMISS));
-        fragments.add(FragmentPost.newInstance(Url.LIGUI_UXING));
-        fragments.add(FragmentPost.newInstance(Url.LIGUI_UGIRLS));
-        fragments.add(FragmentPost.newInstance(Url.LIGUI_YOUWU));
-        fragments.add(FragmentPost.newInstance(Url.LIGUI_FEILIN));
-        fragments.add(FragmentPost.newInstance(Url.LIGUI_XINGLEYUAN));
-        fragments.add(FragmentPost.newInstance(Url.LIGUI_LOLI));
-        fragments.add(FragmentPost.newInstance(Url.LIGUI_MISTAR));
-        fragments.add(FragmentPost.newInstance(Url.LIGUI_TUIGIRLS));
-        fragments.add(FragmentPost.newInstance(Url.LIGUI_MFSTAR));
-        fragments.add(FragmentPost.newInstance(Url.LIGUI_WINGS));
-        fragments.add(FragmentPost.newInstance(Url.LIGUI_QINGDOUKE));
-        fragments.add(FragmentPost.newInstance(Url.LIGUI_LEGBABY));
-        fragments.add(FragmentPost.newInstance(Url.LIGUI_ROSI));
+        Observable.create(new ObservableOnSubscribe<List<List>>() {
+            @Override
+            public void subscribe(ObservableEmitter<List<List>> emitter) {
+                LiGui.getInstance().parseLiGuiBanner(INDEX);
+                emitter.onNext(LiGui.getInstance().getTopNavs());
+            }
+        }).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<List<List>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
 
-        List<String> titles = new ArrayList<>();
-        titles.add("最新美图");
-        titles.add("爱蜜社");
-        titles.add("优星馆");
-        titles.add("尤果网");
-        titles.add("尤物");
-        titles.add("私房照");
-        titles.add("星乐园");
-        titles.add("萝莉社");
-        titles.add("魅妍社");
-        titles.add("推女郎");
-        titles.add("模仿学院");
-        titles.add("影私荟");
-        titles.add("青豆客");
-        titles.add("长腿宝贝");
-        titles.add("ROSI");
+                    }
 
-        TabLayoutAdapter adapter = new TabLayoutAdapter(getChildFragmentManager(), fragments, titles);
-        viewPager.setAdapter(adapter);
-        viewPager.setOffscreenPageLimit(fragments.size());
-        tabLayout.setupWithViewPager(viewPager);
-    }
+                    @Override
+                    public void onNext(List<List> lists) {
+                        // 获取每一个导航栏的url
+                        if (lists.size() != 2) {
+                            return;
+                        }
+                        List<Fragment> fragments = new ArrayList<>();
+                        List<String> urls = lists.get(1);
+                        for (int i = 0; i < urls.size(); i++) {
+                            if (i == 0) {
+                                fragments.add(FragmentPost.newInstance(urls.get(i), FragmentPost.PAGE_ONE));
+                            } else {
+                                fragments.add(FragmentPost.newInstance(urls.get(i)));
+                            }
+                        }
+                        // 获取每一个导航栏的标题
+                        List<String> titles = lists.get(0);
 
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        initView(view);
+                        TabLayoutAdapter adapter = new TabLayoutAdapter(getChildFragmentManager(), fragments, titles);
+                        viewPager.setAdapter(adapter);
+                        // 解决Fragment切换时被销毁
+                        viewPager.setOffscreenPageLimit(fragments.size());
+                        tabLayout.setupWithViewPager(viewPager);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
     }
 }

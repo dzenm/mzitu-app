@@ -1,21 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="10dp">
 
     <TextView
         android:id="@+id/title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
         android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"
-        android:background="@color/materiaLightGrey"
+        android:layout_marginBottom="2dp"
+        android:background="@drawable/bg_date_post"
         android:foreground="?attr/selectableItemBackgroundBorderless"
-        android:paddingLeft="20dp"
-        android:paddingTop="16dp"
-        android:paddingRight="20dp"
-        android:paddingBottom="16dp"
-        android:textColor="@color/white"
-        android:textSize="16sp" />
+        android:textColor="@color/white" />
 </RelativeLayout>

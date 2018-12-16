@@ -7,8 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AnimationUtils;
-import android.view.animation.LayoutAnimationController;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.load.model.Headers;
@@ -23,22 +22,28 @@ import java.util.Map;
 
 public abstract class BaseAdapter<T> extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    public static final int ITEM_TYPE_HEAD_COUNT = 1;
-    public static final int ITEM_TYPE_FOOT_COUNT = 1;
+    public static final int ITEM_HEAD_COUNT = 1;
+    public static final int ITEM_FOOT_COUNT = 1;        // ITEM头部和尾部的数量
+
     public static final int ITEM_TYPE_HEAD = 11;
     public static final int ITEM_TYPE_CONTENT = 12;
-    public static final int ITEM_TYPE_FOOT = 13;
+    public static final int ITEM_TYPE_FOOT = 13;        // ITEM的类型
 
     public final static int TYPE_MZITU = 21;
-    public final static int TYPE_LIGUI = 22;
+    public final static int TYPE_LIGUI = 22;            // 图片所在的网站的类型
+
+    public final static int LOAD_LOADING = 31;
+    public final static int LOAD_MORE = 32;
+    public final static int LOAD_FINISH = 33;           // ITEM的底部显示不同的提醒
 
     public static final String HEADER_MZITU = "http://www.mzitu.com/all/";
-    public static final String HEADER_LIGUI = "http://www.ligui.org/";
+    public static final String HEADER_LIGUI = "http://www.ligui.org/";      // 用于防盗链的请求头
 
     protected List<T> beans;
     protected OnItemClickListener onItemClickListener;
     protected Fragment fragment;
     private int notifyStart = 0;
+    private int loadingStatus;
 
     public BaseAdapter(Fragment fragment) {
         this.fragment = fragment;
@@ -46,6 +51,13 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<RecyclerView.V
 
     public void setNotifyStart(int notifyStart) {
         this.notifyStart = notifyStart;
+    }
+
+    public void setLoadingStatus(int loadingStatus) {
+        if (beans != null) {
+            this.loadingStatus = loadingStatus;
+            notifyItemRangeChanged(beans.size() + 1, 1);
+        }
     }
 
     public void addBeanData(List<T> listBean) {
@@ -77,9 +89,9 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<RecyclerView.V
      */
     @Override
     public int getItemViewType(int position) {
-        if (ITEM_TYPE_HEAD_COUNT != 0 && position == 0) {
+        if (ITEM_HEAD_COUNT != 0 && position == 0) {
             return ITEM_TYPE_HEAD;
-        } else if (ITEM_TYPE_FOOT_COUNT != 0 && position == ITEM_TYPE_HEAD_COUNT + beans.size()) {
+        } else if (ITEM_FOOT_COUNT != 0 && position == ITEM_HEAD_COUNT + beans.size()) {
             return ITEM_TYPE_FOOT;
         } else {
             return ITEM_TYPE_CONTENT;
@@ -108,8 +120,6 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<RecyclerView.V
         } else if (viewType == ITEM_TYPE_FOOT) {
             View view = LayoutInflater.from(context).inflate(layoutFootID(), parent, false);
             FootViewHolder viewHolder = new FootViewHolder(view);
-            TextView tipText = viewHolder.get(R.id.tipText);
-            tipText.setText(R.string.loading_status_running);
             return viewHolder;
         }
         return null;
@@ -127,7 +137,7 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<RecyclerView.V
             HeadViewHolder viewHolder = (HeadViewHolder) holder;
         } else if (holder instanceof ViewHolder) {
             final ViewHolder viewHolder = (ViewHolder) holder;
-            setBindViewHolderData(viewHolder, position - ITEM_TYPE_HEAD_COUNT);
+            setBindViewHolderData(viewHolder, position - ITEM_HEAD_COUNT);
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -136,19 +146,20 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<RecyclerView.V
                     }
                 }
             });
-            // item进入动画
-            Context context = holder.itemView.getContext();
-            LayoutAnimationController controller = AnimationUtils.loadLayoutAnimation(context, R.anim.layout_animation_fall_down);
-            ((ViewGroup) holder.itemView).setLayoutAnimation(controller);
         } else if (holder instanceof FootViewHolder) {
             FootViewHolder viewHolder = (FootViewHolder) holder;
-
+            TextView tipText = viewHolder.get(R.id.tipText);
+            ProgressBar progressBar = viewHolder.get(R.id.progressBar);
+            tipText.setText(loadingStatus == LOAD_LOADING ?
+                    R.string.loading_status_running : loadingStatus == LOAD_FINISH ?
+                    R.string.loading_status_finish : R.string.loading_status_more);
+            progressBar.setVisibility(loadingStatus == LOAD_LOADING ? View.VISIBLE : View.GONE);
         }
     }
 
     @Override
     public int getItemCount() {
-        return beans == null ? 0 : beans.size() + ITEM_TYPE_HEAD_COUNT + ITEM_TYPE_FOOT_COUNT;
+        return beans == null ? 0 : beans.size() + ITEM_HEAD_COUNT + ITEM_FOOT_COUNT;
     }
 
     /**
