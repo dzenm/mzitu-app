@@ -9,6 +9,4 @@
 ### <a href="http://ligui.com" alt="丽柜网" />
 <img src="https://github.com/freedomeden/mzitu-app/blob/master/picture/ligui.png" width = "30%" />
 
-<h1>
-   <a href="https://raw.githubusercontent.com/freedomeden/mzitu-app/master/app/release/app-release.apk" alt="APK下载" />
-</h1>
+# <a href="https://raw.githubusercontent.com/freedomeden/mzitu-app/master/app/release/app-release.apk" alt="APK下载" />
