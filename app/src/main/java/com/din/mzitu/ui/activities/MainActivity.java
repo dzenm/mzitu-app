@@ -1,5 +1,7 @@
 package com.din.mzitu.ui.activities;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -12,6 +14,7 @@ import android.view.Gravity;
 import android.view.MenuItem;
 
 import com.din.mzitu.R;
+import com.din.mzitu.api.LiGui;
 import com.din.mzitu.ui.fragments.main.FragmentLiGui;
 import com.din.mzitu.ui.fragments.main.FragmentMzitu;
 import com.din.mzitu.utill.FragmentUtil;
@@ -27,12 +30,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private FragmentLiGui fragmentLiGui;
     private List<Fragment> list;
     private FragmentUtil fragmentUtil;
+    private boolean isInit = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        initView();
+
+        // 获取数据时添加观察者模式
+        getLifecycle().addObserver(LiGui.getInstance());
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (!isInit) {
+            initView();
+            isInit = true;
+        }
     }
 
     private void initView() {
@@ -47,11 +62,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         fragmentUtil = new FragmentUtil(this, R.id.framelayout, list);
         fragmentUtil.showFragment(fragmentMzitu);
         navigationView.getMenu().getItem(0).setChecked(true);   // 选中的侧滑item着色
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
     }
 
     @Override
@@ -78,6 +88,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     } else if (item.getItemId() == R.id.ligui) {
                         fragmentUtil.hideFragment().showFragment(fragmentLiGui);
                         navigationView.getMenu().getItem(1).setChecked(true);
+                    } else if (item.getItemId() == R.id.setting) {
+
+                    } else if (item.getItemId() == R.id.issues) {
+                        // 跳转懂啊网页，提Issues
+                        Intent intent = new Intent(Intent.ACTION_VIEW);
+                        intent.setData(Uri.parse("https://github.com/freedomeden/mzitu-app/issues"));
+                        startActivity(intent);
+                    } else if (item.getItemId() == R.id.about) {
+                        // 联系我
+                        Intent intent = new Intent(Intent.ACTION_ATTACH_DATA);
+                        intent.setData(Uri.parse("mailto:dinzhenyan1997@126.com"));
+                        intent.putExtra(Intent.EXTRA_SUBJECT, "意见反馈");
+                        startActivity(intent);
                     }
                 }
             }, 300);

@@ -18,6 +18,11 @@
                     android:icon="@drawable/ic_mzitu"
                     android:title="@string/drawer_nav_setting" />
                 <item
+                    android:id="@+id/issues"
+                    android:icon="@drawable/ic_mzitu"
+                    android:title="@string/drawer_nav_issues" />
+
+                <item
                     android:id="@+id/about"
                     android:icon="@drawable/ic_ligui"
                     android:title="@string/drawer_nav_about" />

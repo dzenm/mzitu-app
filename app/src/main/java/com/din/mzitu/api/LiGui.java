@@ -1,6 +1,7 @@
 package com.din.mzitu.api;
 
-import android.util.Log;
+import android.arch.lifecycle.Lifecycle;
+import android.arch.lifecycle.LifecycleOwner;
 
 import com.din.mzitu.adapter.PostAllAdapter;
 import com.din.mzitu.adapter.PostSingleAdapter;
@@ -18,12 +19,11 @@ import java.util.List;
  * @author: dinzhenyan
  * @time: 2018/12/4 下午12:19
  */
-public final class LiGui extends BaseApi {
+public final class LiGui extends BaseApi implements IPresenter {
 
     public static final String LIGUI = "http://www.ligui.org";
 
     private final static int OFFSET_PICTURE = 5;
-    private final static int OFFSET_POST = 10;
 
     private final static String HREF = "href";
     private final static String IMG = "img";
@@ -37,6 +37,45 @@ public final class LiGui extends BaseApi {
 
     private LiGui() {
         topNavs = new ArrayList<>();
+    }
+
+    @Override
+    public void onCreate(LifecycleOwner owner) {
+    }
+
+    @Override
+    public void onStart(LifecycleOwner owner) {
+
+    }
+
+    @Override
+    public void onResume(LifecycleOwner owner) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                parseLiGuiBanner(LIGUI);
+            }
+        }).start();
+    }
+
+    @Override
+    public void onPause(LifecycleOwner owner) {
+
+    }
+
+    @Override
+    public void onStop(LifecycleOwner owner) {
+
+    }
+
+    @Override
+    public void onDestory(LifecycleOwner owner) {
+
+    }
+
+    @Override
+    public void onLifeCycleChanged(LifecycleOwner owner, Lifecycle.Event event) {
+
     }
 
     private static class Instance {
@@ -82,50 +121,51 @@ public final class LiGui extends BaseApi {
      */
     public List<PostAllBean> parseLiGuiMainData(int page, String webURL) {
         List<PostAllBean> postAllBeans = new ArrayList<>();
-        String website = webURL + "1" + SUFFIX;
-        Elements elements = selectElements(website, "div.pic4list", LI);
-        if (elements != null) {
-            int length = elements.size();
-            if (length < (page + 1) * OFFSET_POST) {
-                int start = (page - 1) * OFFSET_POST;
-                int end = page * OFFSET_POST;
-                int count = length >= end ? end : length;
-
-                // 获取每个帖子的url、图片和标题
-                for (int i = start; i < count; i++) {
-                    String url = LIGUI + elements.get(i).select(A).attr(HREF);
-                    String image = LIGUI + elements.get(i).select(IMG).attr(SRC);
-                    String title = elements.get(i).select(IMG).attr(ALT);
-                    postAllBeans.add(new PostAllBean(PostAllAdapter.TYPE_LIGUI, url, image, title));
-                }
-                return postAllBeans;
+        Elements element = selectElements(webURL, "div.pageinfo", A);       // 获取分页的角标
+        if (element != null) {
+            //对字符串剪切获取最终的分页数量
+            String href = element.get(element.size() - 1).attr(HREF);
+            int position;
+            String website = null;
+            if (webURL.equals("http://www.ligui.org/youmi/")) {
+                int start = href.lastIndexOf("_") + 1;
+                int end = href.indexOf(".");
+                position = Integer.parseInt(href.substring(start, end));
+                website = webURL + "list_13_" + page + SUFFIX;
             } else {
-
+                position = Integer.parseInt(href.substring(0, href.indexOf(".")));
+                website = webURL + page + SUFFIX;
             }
-
+            if (page <= position) {
+                Elements elements = selectElements(website, "div.pic4list", LI);
+                if (elements != null) {
+                    // 获取每个帖子的url、图片和标题
+                    for (int i = 0; i < elements.size(); i++) {
+                        String url = LIGUI + elements.get(i).select(A).attr(HREF);
+                        String image = LIGUI + elements.get(i).select(IMG).attr(SRC);
+                        String title = elements.get(i).select(IMG).attr(ALT);
+                        postAllBeans.add(new PostAllBean(PostAllAdapter.TYPE_LIGUI, url, image, title));
+                    }
+                    return postAllBeans;
+                }
+            }
         }
         return null;
     }
 
     public List<PostSingleBean> parseLiGuiContentData(int page, String webURL) {
         List<PostSingleBean> postSingleBeans = new ArrayList<>();
-        int i = (page - 1) * OFFSET_PICTURE + 1;
-        while (true) {
-            if (i <= (page * OFFSET_PICTURE)) {
-                break;
-            }
-            String web = i == 1 ? webURL : webURL.substring(0, webURL.length() - 6) + "_" + i + SUFFIX;
-            Log.d("DZY", "web: " + web);
+        int start = (page - 1) * OFFSET_PICTURE + 1;
+        int end = page * OFFSET_PICTURE;
+        for (int i = start; i <= end; i++) {
+            String web = i == 1 ? webURL : webURL.substring(0, webURL.lastIndexOf(".")) + "_" + i + SUFFIX;
             Element element = selectElements(web, "div.nry", IMG).first();
-            Log.d("DZY", "element: " + element);
             if (element == null) {
                 break;
             }
             String title = element.attr(ALT);
             String url = LIGUI + element.attr(SRC);
-            Log.d("DZY", "title: " + title);
             postSingleBeans.add(new PostSingleBean(PostSingleAdapter.TYPE_LIGUI, url, title));
-            i++;
         }
         return postSingleBeans;
     }

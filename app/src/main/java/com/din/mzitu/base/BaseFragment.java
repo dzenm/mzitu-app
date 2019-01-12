@@ -2,6 +2,7 @@ package com.din.mzitu.base;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -33,7 +34,6 @@ public abstract class BaseFragment<T> extends Fragment implements SwipeRefreshLa
 
     protected RecyclerView recyclerView;
     protected SwipeRefreshLayout swipeRefresh;
-    protected View rootView;
 
     protected BaseAdapter adapter;
     protected List listBeans;
@@ -137,6 +137,18 @@ public abstract class BaseFragment<T> extends Fragment implements SwipeRefreshLa
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
+                    if (layoutManager instanceof StaggeredGridLayoutManager) {
+                        // 解决屏闪
+                        ((StaggeredGridLayoutManager) layoutManager).invalidateSpanAssignments();
+                    }
+                }
+            }
+
+            @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
@@ -147,15 +159,10 @@ public abstract class BaseFragment<T> extends Fragment implements SwipeRefreshLa
                 int recyclerBottom = recyclerView.getBottom() - recyclerView.getPaddingBottom();
                 // 通过这个lastChildView得到这个view当前的position值
                 int lastPosition = layoutManager.getPosition(lastChildView);
-
                 //判断lastChildView的bottom值跟recyclerBottom，判断lastPosition是不是最后一个position，如果两个条件都满足则说明是真正的滑动到了底部
                 if (lastChildBottom == recyclerBottom && lastPosition == recyclerView.getLayoutManager().getItemCount() - 1) {
                     // 解决下拉到底部时自动滚动
                     recyclerView.stopScroll();
-                    if (layoutManager instanceof StaggeredGridLayoutManager) {
-                        // 解决屏闪
-                        ((StaggeredGridLayoutManager) layoutManager).invalidateSpanAssignments();
-                    }
                     onLastPosition(lastPosition);
                 }
             }

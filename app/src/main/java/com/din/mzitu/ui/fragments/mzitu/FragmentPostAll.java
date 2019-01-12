@@ -2,11 +2,9 @@ package com.din.mzitu.ui.fragments.mzitu;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
 
-import com.din.mzitu.R;
 import com.din.mzitu.adapter.PostAllAdapter;
 import com.din.mzitu.adapter.ViewHolder;
 import com.din.mzitu.api.Mzitu;
@@ -25,36 +23,22 @@ public class FragmentPostAll extends BaseFragment implements BaseAdapter.OnItemC
     public static final String POST_ALL = "post_all";
     public static final String POSITION = "position";
 
-    /**
-     * 创建一个实例
-     *
-     * @param view
-     * @param url  爬取数据的url
-     * @return
-     */
-    public static FragmentPostAll newInstance(View view, String url) {
+    // 创建一个实例   url:爬取数据的url
+    public static FragmentPostAll newInstance(String url) {
         Bundle bundle = new Bundle();
         bundle.putString(POST_ALL, url);
         bundle.putString(FragmentPostSingle.POST_WEBSITE, FragmentMzitu.MZITU);
         FragmentPostAll fragmentPostAll = new FragmentPostAll();
         fragmentPostAll.setArguments(bundle);
-        fragmentPostAll.rootView = view;
         return fragmentPostAll;
     }
 
-    /**
-     * @param view
-     * @param url
-     * @param position
-     * @return
-     */
-    public static FragmentPostAll newInstance(View view, String url, int position) {
+    public static FragmentPostAll newInstance(String url, int position) {
         Bundle bundle = new Bundle();
         bundle.putString(POST_ALL, url);
         bundle.putInt(POSITION, position);
         FragmentPostAll fragmentPostAll = new FragmentPostAll();
         fragmentPostAll.setArguments(bundle);
-        fragmentPostAll.rootView = view;
         return fragmentPostAll;
     }
 
@@ -73,17 +57,13 @@ public class FragmentPostAll extends BaseFragment implements BaseAdapter.OnItemC
 
     @Override
     public PostAllAdapter getAdapter() {
-        // 点击FloatingActionButton回到顶部
-        FloatingActionButton button = rootView.findViewById(R.id.floatbtn);
-        button.setOnClickListener(this);
-
         return new PostAllAdapter(this);
     }
 
     @Override
     public StaggeredGridLayoutManager getLayoutManager() {
         StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
-        // 解决屏闪
+        // 解决屏闪，乱跳
         layoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_NONE);
         return layoutManager;
     }
@@ -98,7 +78,8 @@ public class FragmentPostAll extends BaseFragment implements BaseAdapter.OnItemC
     @Override
     public void onItemClick(ViewHolder holder, int position) {
         PostAllBean bean = (PostAllBean) listBeans.get(position - 1);         // 获取数据的item
-        Intent intent = new Intent(getActivity(), PostSingleActivity.class);
+//        Intent intent = new Intent(getActivity(), PostSingleActivity.class);
+        Intent intent = null;
         intent.putExtra(FragmentPostSingle.POST_URL, bean.getUrl());      // 将URL和TITLE传递到下一个页面
         intent.putExtra(FragmentPostSingle.POST_TITLE, bean.getTitle());
         intent.putExtra(FragmentPostSingle.POST_WEBSITE, FragmentMzitu.MZITU);

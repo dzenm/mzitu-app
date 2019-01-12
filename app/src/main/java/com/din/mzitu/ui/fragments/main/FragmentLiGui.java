@@ -50,7 +50,7 @@ public class FragmentLiGui extends Fragment {
         Observable.create(new ObservableOnSubscribe<List<List>>() {
             @Override
             public void subscribe(ObservableEmitter<List<List>> emitter) {
-                LiGui.getInstance().parseLiGuiBanner(INDEX);
+//                LiGui.getInstance().parseLiGuiBanner(INDEX);
                 emitter.onNext(LiGui.getInstance().getTopNavs());
             }
         }).subscribeOn(Schedulers.io())

@@ -18,9 +18,8 @@
         <android.support.design.widget.TabLayout
             android:id="@+id/tablayout"
             android:layout_width="match_parent"
-            android:layout_height="35dp"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:minHeight="35dp"
             app:layout_scrollFlags="scroll|enterAlways"
             app:tabBackground="@null"
             app:tabIndicatorColor="@color/white"
@@ -35,17 +34,5 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/floatbtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="24dp"
-        android:layout_marginBottom="24dp"
-        android:src="@drawable/ic_top"
-        app:backgroundTint="@color/colorAccent"
-        app:fabSize="mini"
-        app:layout_anchor="@id/viewpager"
-        app:layout_anchorGravity="bottom|right" />
 
 </android.support.design.widget.CoordinatorLayout>

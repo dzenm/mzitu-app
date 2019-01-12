@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -66,6 +67,12 @@ public class PostAllAdapter extends BaseAdapter {
                     .into(new SimpleTarget<Bitmap>(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL) {
                         @Override
                         public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                            int width = resource.getWidth();
+                            int height = resource.getHeight();
+                            float scale = (float) width / (float) height;
+                            ViewGroup.LayoutParams layoutParams = imageView.getLayoutParams();
+                            layoutParams.height = (int) (layoutParams.width / scale);
+                            imageView.setLayoutParams(layoutParams);                    // 应用高度到布局中
                             imageView.setImageBitmap(resource);
                         }
                     });

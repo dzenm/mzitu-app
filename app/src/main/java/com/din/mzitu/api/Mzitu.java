@@ -1,5 +1,9 @@
 package com.din.mzitu.api;
 
+import android.arch.lifecycle.Lifecycle;
+import android.arch.lifecycle.LifecycleOwner;
+import android.util.Log;
+
 import com.din.mzitu.adapter.PostAllAdapter;
 import com.din.mzitu.adapter.PostSingleAdapter;
 import com.din.mzitu.base.BaseApi;
@@ -17,7 +21,7 @@ import java.util.List;
  * @author: dinzhenyan
  * @time: 2018/12/4 下午12:20
  */
-public final class Mzitu extends BaseApi {
+public final class Mzitu extends BaseApi implements IPresenter {
 
     private final static int OFFSET = 5;
     private final static String IMG = "img";
@@ -26,6 +30,7 @@ public final class Mzitu extends BaseApi {
     private final static String ALT = "alt";
     private final static String LI = "li";
     private final static String SPAN = "span";
+    private final static String DATA_ORIGINAL = "data-original";
     private final static String A = "a";
     private List<List> headers;
 
@@ -34,6 +39,41 @@ public final class Mzitu extends BaseApi {
      */
     private Mzitu() {
         headers = new ArrayList<>();
+    }
+
+    @Override
+    public void onCreate(LifecycleOwner owner) {
+
+    }
+
+    @Override
+    public void onStart(LifecycleOwner owner) {
+
+    }
+
+    @Override
+    public void onResume(LifecycleOwner owner) {
+
+    }
+
+    @Override
+    public void onPause(LifecycleOwner owner) {
+
+    }
+
+    @Override
+    public void onStop(LifecycleOwner owner) {
+
+    }
+
+    @Override
+    public void onDestory(LifecycleOwner owner) {
+
+    }
+
+    @Override
+    public void onLifeCycleChanged(LifecycleOwner owner, Lifecycle.Event event) {
+
     }
 
     /**
@@ -84,7 +124,7 @@ public final class Mzitu extends BaseApi {
     public List<PostAllBean> parseMzituMainData(int page, String postUrl) {
         List<PostAllBean> postAllBeans = new ArrayList<>();
         // 获取页面显示的页数
-        Elements pageElements = selectElements(postUrl, "nav.navigation", A);
+        Elements pageElements = selectElements(postUrl, "nav.pagination", A);
         if (pageElements != null) {
             int count = pageElements.size();
             // 判断显示的总页数，分一页和多页。一页没有结果，多页有换页标示，多页时根据换页标示获取总页数
@@ -95,7 +135,7 @@ public final class Mzitu extends BaseApi {
                 // 遍历每一页的帖子个数
                 for (int i = 0; i < elements.size(); i++) {
                     String url = elements.get(i).select(A).attr(HREF);
-                    String image = elements.get(i).select(IMG).attr("data-original");
+                    String image = elements.get(i).select(IMG).attr(DATA_ORIGINAL);
                     String title = elements.get(i).select(IMG).attr(ALT);
                     postAllBeans.add(new PostAllBean(PostAllAdapter.TYPE_MZITU, url, image, title));     // 将获取到的内容放在List里
                 }
@@ -173,15 +213,18 @@ public final class Mzitu extends BaseApi {
      */
     public List<PostSingleBean> parseMzituSelfData(int page, String postUrl) {
         List<PostSingleBean> postSingleBeans = new ArrayList<>();
-        Elements elements = selectElements(postUrl + "1", "div.pagenavi-cm", A);     // 分析网页的内容
+        // 通过页面跳转按钮找到页面的个数
+        Elements elements = selectElements(postUrl + "1", "div.pagenavi-cm", A);
         int pages = Integer.valueOf(elements.get(elements.size() - 2).text());
         if (pages >= page) {
-            postUrl = postUrl + page;
+            postUrl = postUrl + (pages - page + 1);
             Elements pageElement = selectElements(postUrl, "div.postlist", LI);
             for (int i = 0; i < pageElement.size(); i++) {
-                String url = pageElement.get(i).select(IMG).attr(SRC);
+                String url = pageElement.get(i).select(IMG).attr("data-original");
                 String title = pageElement.get(i).select(A).text();
                 postSingleBeans.add(new PostSingleBean(PostSingleAdapter.TYPE_MZITU, url, title));
+                Log.d("DZY", "url: " + url);
+                Log.d("DZY", "title: " + title);
                 // 将获取到的内容放在List里
             }
             // 请求页数小于总页数返回请求的数据

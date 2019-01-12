@@ -8,7 +8,7 @@
     <android.support.design.widget.TabLayout
         android:id="@+id/tablayout"
         android:layout_width="wrap_content"
-        android:layout_height="35dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
         app:tabBackground="@null"
         app:tabIndicatorColor="@color/colorPrimary"

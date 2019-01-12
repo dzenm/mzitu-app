@@ -48,7 +48,7 @@ public class FragmentPost extends BaseFragment implements BaseAdapter.OnItemClic
     @Override
     protected void observableTask(ObservableEmitter emitter) {
         String url = getArguments().getString(POST_ALL);
-        emitter.onNext(LiGui.getInstance().parseLiGuiMainData(++page, url));
+        emitter.onNext(LiGui.getInstance().parseLiGuiMainData(page++, url));
     }
 
     @Override

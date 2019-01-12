@@ -22,12 +22,11 @@ public class FragmentPostDate extends BaseFragment implements BaseAdapter.OnItem
 
     public static final String POST_DATE = "post_date";
 
-    public static FragmentPostDate newInstance(View view, String url) {
+    public static FragmentPostDate newInstance(String url) {
         Bundle bundle = new Bundle();
         bundle.putString(POST_DATE, url);
         FragmentPostDate fragmentPostDate = new FragmentPostDate();
         fragmentPostDate.setArguments(bundle);
-        fragmentPostDate.rootView = view;
         return fragmentPostDate;
     }
 

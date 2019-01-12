@@ -50,13 +50,13 @@ public class FragmentMzitu extends Fragment {
 
         List<Fragment> list = new ArrayList<>();
 
-        list.add(FragmentMain.newInstance(rootView));
-        list.add(FragmentPostAll.newInstance(rootView, SEXY));
-        list.add(FragmentPostAll.newInstance(rootView, JAPAN));
-        list.add(FragmentPostAll.newInstance(rootView, TAIWAN));
-        list.add(FragmentPostAll.newInstance(rootView, PURE));
-        list.add(FragmentPostSelf.newInstance(rootView));
-        list.add(FragmentPostDate.newInstance(rootView, DAYUPDATE));
+        list.add(FragmentMain.newInstance());
+        list.add(FragmentPostAll.newInstance(SEXY));
+        list.add(FragmentPostAll.newInstance(JAPAN));
+        list.add(FragmentPostAll.newInstance(TAIWAN));
+        list.add(FragmentPostAll.newInstance(PURE));
+        list.add(FragmentPostSelf.newInstance());
+        list.add(FragmentPostDate.newInstance(DAYUPDATE));
 
         List<String> titles = new ArrayList<>();
         titles.add("首页");

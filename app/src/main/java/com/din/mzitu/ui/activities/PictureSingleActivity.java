@@ -46,9 +46,6 @@ public class PictureSingleActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_single_picture);
 
-        // 请求权限
-        verifyPermissions(this);
-
         // 获取标题
         Intent intent = getIntent();
         title = intent.getStringExtra(PICTURE_TITLE);
@@ -74,28 +71,33 @@ public class PictureSingleActivity extends AppCompatActivity {
                     public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
                         bitmap = resource;
                         imageView.setImageBitmap(bitmap);
+                        paletteColor(bitmap);
                     }
                 });
+    }
+
+    private void paletteColor(Bitmap bitmap) {
         // 对图片拾色
         Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
             @Override
             public void onGenerated(@NonNull Palette palette) {
-                Palette.Swatch vibrant = palette.getVibrantSwatch();
-                if (vibrant == null) {
+                Palette.Swatch muted = palette.getLightVibrantSwatch();
+                if (muted == null) {
                     for (Palette.Swatch swatch : palette.getSwatches()) {
-                        vibrant = swatch;
+                        muted = swatch;
                         break;
                     }
                 }
-                // 拾色成功，设置颜色
-                int rgb = vibrant.getRgb();
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    Window window = getWindow();
-
-                    // 状态栏改变颜色
-                    int color = ColorUtil.changeColor(rgb);
-                    window.setStatusBarColor(color);
-                    toolbar.setBackgroundColor(color);
+                    if (muted != null) {
+                        // 拾色成功，设置颜色
+                        int rgb = muted.getRgb();
+                        Window window = getWindow();
+                        // 状态栏改变颜色
+                        int color = ColorUtil.changeColor(rgb);
+                        window.setStatusBarColor(color);
+                        toolbar.setBackgroundColor(color);
+                    }
                 }
             }
         });
@@ -126,7 +128,7 @@ public class PictureSingleActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.use_picture, menu);
+        getMenuInflater().inflate(R.menu.picture_menu, menu);
         return true;
     }
 
@@ -135,6 +137,8 @@ public class PictureSingleActivity extends AppCompatActivity {
         if (item.getItemId() == android.R.id.home) {
             onBackPressed();
         } else if (item.getItemId() == R.id.save) {
+            // 请求权限
+            verifyPermissions(this);
             if (bitmap != null) {
                 boolean saveSuccess = FileUtil.savePhoto(bitmap, title, String.valueOf(position) + ".jpg");
                 if (saveSuccess) {
@@ -151,10 +155,12 @@ public class PictureSingleActivity extends AppCompatActivity {
     }
 
     public void setWallpaper() {
-        try {
-            WallpaperManager.getInstance(getApplicationContext()).setBitmap(bitmap);
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (bitmap != null) {
+            try {
+                WallpaperManager.getInstance(getApplicationContext()).setBitmap(bitmap);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

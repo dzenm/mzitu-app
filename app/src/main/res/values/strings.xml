@@ -9,6 +9,7 @@
     <string name="drawer_nav_ligui">丽柜网</string>
     <string name="drawer_nav_group_others">其他</string>
     <string name="drawer_nav_setting">设置</string>
+    <string name="drawer_nav_issues">issues</string>
     <string name="drawer_nav_about">关于</string>
 
     <string name="transition_name_picture">transition_name_picture</string>

@@ -17,6 +17,7 @@ public class BackToTopListener implements View.OnClickListener {
         this.backToTopView = backToTopView;
     }
 
+    // 双击事件
     @Override
     public void onClick(View v) {
         long nowClickTime = System.currentTimeMillis();

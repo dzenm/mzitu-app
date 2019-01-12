@@ -49,22 +49,42 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<RecyclerView.V
         this.fragment = fragment;
     }
 
+    /**
+     * Item刷新起始的位置
+     *
+     * @param notifyStart
+     */
     public void setNotifyStart(int notifyStart) {
         this.notifyStart = notifyStart;
     }
 
+    /**
+     * 滑动最底部的Item的状态
+     *
+     * @param loadingStatus
+     */
     public void setLoadingStatus(int loadingStatus) {
         if (beans != null) {
             this.loadingStatus = loadingStatus;
-            notifyItemRangeChanged(beans.size() + 1, 1);
+            notifyItemRangeChanged(beans.size() + 1, 1);    // 刷新最底部显示的Item
         }
     }
 
+    /**
+     * 添加分页加载的数据
+     *
+     * @param listBean
+     */
     public void addBeanData(List<T> listBean) {
         beans = listBean;
-        notifyItemRangeChanged(notifyStart, beans.size() - notifyStart);
+        notifyItemRangeInserted(notifyStart, beans.size() - notifyStart); // 添加分页数据之后刷新分页的数据
     }
 
+    /**
+     * 点击事件
+     *
+     * @param onItemClickListener
+     */
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
     }
@@ -73,10 +93,20 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<RecyclerView.V
 
     protected abstract void setBindViewHolderData(ViewHolder viewHolder, int position);
 
+    /**
+     * Foot布局
+     *
+     * @return
+     */
     protected int layoutFootID() {
         return R.layout.rv_foot;
     }
 
+    /**
+     * Head布局
+     *
+     * @return
+     */
     protected int layoutHeadID() {
         return R.layout.rv_head;
     }
@@ -150,6 +180,8 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<RecyclerView.V
             FootViewHolder viewHolder = (FootViewHolder) holder;
             TextView tipText = viewHolder.get(R.id.tipText);
             ProgressBar progressBar = viewHolder.get(R.id.progressBar);
+
+            // 底部Item的数据和状态
             tipText.setText(loadingStatus == LOAD_LOADING ?
                     R.string.loading_status_running : loadingStatus == LOAD_FINISH ?
                     R.string.loading_status_finish : R.string.loading_status_more);

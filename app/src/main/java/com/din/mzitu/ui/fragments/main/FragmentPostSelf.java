@@ -21,9 +21,8 @@ public class FragmentPostSelf extends BaseFragment {
 
     public static final String SELF = "https://www.mzitu.com/zipai/comment-page-";
 
-    public static FragmentPostSelf newInstance(View view) {
+    public static FragmentPostSelf newInstance() {
         FragmentPostSelf fragmentPostSelf = new FragmentPostSelf();
-        fragmentPostSelf.rootView = view;
         return fragmentPostSelf;
     }
 

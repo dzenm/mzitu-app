@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 
 import com.din.mzitu.R;
 import com.din.mzitu.adapter.TabLayoutAdapter;
+import com.din.mzitu.api.LiGui;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,17 +21,14 @@ public class FragmentMain extends Fragment {
     public static final String NEW = "https://www.mzitu.com/";
     public static final String BEST = "http://www.mzitu.com/best/";
     public static final String HOT = "http://www.mzitu.com/hot/";
-    private View rootView;
 
     /**
      * 创建单例
      *
-     * @param view
      * @return
      */
-    public static FragmentMain newInstance(View view) {
+    public static FragmentMain newInstance() {
         FragmentMain fragmentMain = new FragmentMain();
-        fragmentMain.rootView = view;
         return fragmentMain;
     }
 
@@ -43,9 +41,9 @@ public class FragmentMain extends Fragment {
         TabLayout tabLayout = view.findViewById(R.id.tablayout);
 
         List<Fragment> list = new ArrayList<>();
-        list.add(FragmentPostAll.newInstance(rootView, NEW, FragmentPostAll.PAGE_ONE));
-        list.add(FragmentPostAll.newInstance(rootView, BEST));
-        list.add(FragmentPostAll.newInstance(rootView, HOT));
+        list.add(FragmentPostAll.newInstance(NEW, FragmentPostAll.PAGE_ONE));
+        list.add(FragmentPostAll.newInstance(BEST));
+        list.add(FragmentPostAll.newInstance(HOT));
         List<String> titles = new ArrayList<>();
         titles.add("最新");
         titles.add("推荐");
