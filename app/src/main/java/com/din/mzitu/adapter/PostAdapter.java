@@ -8,20 +8,21 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Priority;
 import com.bumptech.glide.load.model.GlideUrl;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
 import com.din.mzitu.R;
 import com.din.mzitu.base.BaseAdapter;
-import com.din.mzitu.bean.PostAllBean;
+import com.din.mzitu.bean.PostBean;
 import com.din.mzitu.utill.GlideApp;
 
 import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
 
-public class PostAllAdapter extends BaseAdapter {
+public class PostAdapter extends BaseAdapter {
 
-    public PostAllAdapter(Fragment fragment) {
+    public PostAdapter(Fragment fragment) {
         super(fragment);
     }
 
@@ -32,38 +33,47 @@ public class PostAllAdapter extends BaseAdapter {
 
     @Override
     protected void setBindViewHolderData(ViewHolder viewHolder, final int position) {
-        PostAllBean postAllBean = (PostAllBean) beans.get(position);
+        PostBean postBean = (PostBean) beans.get(position);
+
         TextView title = viewHolder.get(R.id.text);
         final ImageView imageView = viewHolder.get(R.id.image);
-        title.setText(postAllBean.getTitle());
+
+        title.setText(postBean.getTitle());
 
         String header = "";
-        if (postAllBean.getType() == TYPE_MZITU) {
+        if (postBean.getType() == TYPE_MZITU) {
             header = HEADER_MZITU;
-        } else if (postAllBean.getType() == TYPE_LIGUI) {
+        } else if (postBean.getType() == TYPE_LIGUI) {
             header = HEADER_LIGUI;
         }
+
         String tag = (String) imageView.getTag(R.id.image_url);
-        String url = postAllBean.getImage();
+        final String url = postBean.getImage();
 
         // 防盗链，图片会加载失败，需要更换请求头
         GlideUrl glideUrl = new GlideUrl(url == tag ? tag : url, header(header));
-        if (tag == url) {
+        if (tag != null && tag == url) {
             GlideApp.with(fragment)
                     .load(glideUrl)
                     .thumbnail(0.1f)
                     .centerCrop()
-                    .skipMemoryCache(false)
+                    .priority(Priority.HIGH)
+                    .dontAnimate()
+                    .placeholder(R.drawable.placeholder)
+                    .error(R.drawable.placeholder_error)
                     .transition(withCrossFade())
                     .into(imageView);
         } else {
             GlideApp.with(fragment)
                     .asBitmap()
                     .load(glideUrl)
-                    .centerCrop()
-                    .skipMemoryCache(false)
-                    .placeholder(R.drawable.placeholder)
-                    .error(R.drawable.placeholder_error)
+                    .thumbnail(0.1f)        // 缩略图长宽相对于原始图片的比例
+                    .centerCrop()           // 完全填充满ImageView，裁减掉图片多余区域
+                    .dontAnimate()
+                    .dontTransform()
+                    .priority(Priority.HIGH)
+                    .placeholder(R.drawable.placeholder)        // loading图
+                    .error(R.drawable.placeholder_error)        // 加载失败默认图
                     .into(new SimpleTarget<Bitmap>(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL) {
                         @Override
                         public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
@@ -74,9 +84,9 @@ public class PostAllAdapter extends BaseAdapter {
                             layoutParams.height = (int) (layoutParams.width / scale);
                             imageView.setLayoutParams(layoutParams);                    // 应用高度到布局中
                             imageView.setImageBitmap(resource);
+                            imageView.setTag(R.id.image_url, url);
                         }
                     });
-            imageView.setTag(R.id.image_url, url);
         }
     }
 }

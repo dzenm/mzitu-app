@@ -8,7 +8,7 @@ import android.os.Environment;
 import android.os.Process;
 import android.util.Log;
 
-import com.din.mzitu.ui.activities.App;
+import com.din.mzitu.activities.App;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -159,7 +159,7 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
             String time = formatter.format(new Date());                 // 崩溃的时间
             String fileName = FILE_NAME + "_" + time + ".txt";          // 文件名
             if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-                File dir = getPath();
+                File dir = new File(FileUtil.getInstance().getDirect("log", "crash"));
                 if (!dir.exists()) {
                     dir.mkdirs();
                 }
@@ -172,31 +172,5 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
             Log.e(TAG, "an error occured while writing file...", e);
         }
         return null;
-    }
-
-    /**
-     * 获取崩溃日志目录
-     *
-     * @return
-     */
-    public File getPath() {
-        return new File(Environment.getExternalStorageDirectory() + File.separator + getAppName() + LOG_DIR);
-    }
-
-    /**
-     * 获取App名称
-     *
-     * @return
-     */
-    private String getAppName() {
-        String appName = null;
-        try {
-            String packageName = App.getApp().getPackageName();
-            PackageInfo packageInfo = mContext.getPackageManager().getPackageInfo(packageName, 0);
-            appName = packageInfo.applicationInfo.loadLabel(mContext.getPackageManager()).toString();
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
-        return appName;
     }
 }

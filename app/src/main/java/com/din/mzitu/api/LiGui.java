@@ -3,11 +3,11 @@ package com.din.mzitu.api;
 import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.LifecycleOwner;
 
-import com.din.mzitu.adapter.PostAllAdapter;
-import com.din.mzitu.adapter.PostSingleAdapter;
+import com.din.mzitu.adapter.PostAdapter;
+import com.din.mzitu.adapter.PicAdapter;
 import com.din.mzitu.base.BaseApi;
-import com.din.mzitu.bean.PostAllBean;
-import com.din.mzitu.bean.PostSingleBean;
+import com.din.mzitu.bean.PostBean;
+import com.din.mzitu.bean.PicBean;
 
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -41,6 +41,12 @@ public final class LiGui extends BaseApi implements IPresenter {
 
     @Override
     public void onCreate(LifecycleOwner owner) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                parseLiGuiBanner(LIGUI);
+            }
+        }).start();
     }
 
     @Override
@@ -50,12 +56,6 @@ public final class LiGui extends BaseApi implements IPresenter {
 
     @Override
     public void onResume(LifecycleOwner owner) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                parseLiGuiBanner(LIGUI);
-            }
-        }).start();
     }
 
     @Override
@@ -83,7 +83,7 @@ public final class LiGui extends BaseApi implements IPresenter {
     }
 
     public static LiGui getInstance() {
-        return LiGui.Instance.instance;
+        return Instance.instance;
     }
 
     public List<List> getTopNavs() {
@@ -119,8 +119,8 @@ public final class LiGui extends BaseApi implements IPresenter {
      * @param webURL
      * @return
      */
-    public List<PostAllBean> parseLiGuiMainData(int page, String webURL) {
-        List<PostAllBean> postAllBeans = new ArrayList<>();
+    public List<PostBean> parseLiGuiMainData(int page, String webURL) {
+        List<PostBean> postBeans = new ArrayList<>();
         Elements element = selectElements(webURL, "div.pageinfo", A);       // 获取分页的角标
         if (element != null) {
             //对字符串剪切获取最终的分页数量
@@ -144,17 +144,17 @@ public final class LiGui extends BaseApi implements IPresenter {
                         String url = LIGUI + elements.get(i).select(A).attr(HREF);
                         String image = LIGUI + elements.get(i).select(IMG).attr(SRC);
                         String title = elements.get(i).select(IMG).attr(ALT);
-                        postAllBeans.add(new PostAllBean(PostAllAdapter.TYPE_LIGUI, url, image, title));
+                        postBeans.add(new PostBean(PostAdapter.TYPE_LIGUI, url, image, title));
                     }
-                    return postAllBeans;
+                    return postBeans;
                 }
             }
         }
         return null;
     }
 
-    public List<PostSingleBean> parseLiGuiContentData(int page, String webURL) {
-        List<PostSingleBean> postSingleBeans = new ArrayList<>();
+    public List<PicBean> parseLiGuiContentData(int page, String webURL) {
+        List<PicBean> picBeans = new ArrayList<>();
         int start = (page - 1) * OFFSET_PICTURE + 1;
         int end = page * OFFSET_PICTURE;
         for (int i = start; i <= end; i++) {
@@ -165,8 +165,8 @@ public final class LiGui extends BaseApi implements IPresenter {
             }
             String title = element.attr(ALT);
             String url = LIGUI + element.attr(SRC);
-            postSingleBeans.add(new PostSingleBean(PostSingleAdapter.TYPE_LIGUI, url, title));
+            picBeans.add(new PicBean(PicAdapter.TYPE_LIGUI, url, title));
         }
-        return postSingleBeans;
+        return picBeans;
     }
 }

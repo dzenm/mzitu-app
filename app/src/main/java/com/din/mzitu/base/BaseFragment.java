@@ -142,8 +142,7 @@ public abstract class BaseFragment<T> extends Fragment implements SwipeRefreshLa
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                     RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
                     if (layoutManager instanceof StaggeredGridLayoutManager) {
-                        // 解决屏闪
-                        ((StaggeredGridLayoutManager) layoutManager).invalidateSpanAssignments();
+                        ((StaggeredGridLayoutManager) layoutManager).invalidateSpanAssignments();   // 解决屏闪
                     }
                 }
             }
@@ -161,8 +160,7 @@ public abstract class BaseFragment<T> extends Fragment implements SwipeRefreshLa
                 int lastPosition = layoutManager.getPosition(lastChildView);
                 //判断lastChildView的bottom值跟recyclerBottom，判断lastPosition是不是最后一个position，如果两个条件都满足则说明是真正的滑动到了底部
                 if (lastChildBottom == recyclerBottom && lastPosition == recyclerView.getLayoutManager().getItemCount() - 1) {
-                    // 解决下拉到底部时自动滚动
-                    recyclerView.stopScroll();
+                    recyclerView.stopScroll();              // 解决下拉到底部时自动滚动
                     onLastPosition(lastPosition);
                 }
             }
@@ -201,6 +199,16 @@ public abstract class BaseFragment<T> extends Fragment implements SwipeRefreshLa
      */
     @Override
     public void onItemClick(ViewHolder viewHolder, int position) {
+    }
+
+    /**
+     * Item长按事件
+     *
+     * @param position
+     */
+    @Override
+    public void onItemLongClick(int position) {
+
     }
 
     /**

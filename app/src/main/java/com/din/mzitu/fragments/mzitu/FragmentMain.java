@@ -1,4 +1,4 @@
-package com.din.mzitu.ui.fragments.mzitu;
+package com.din.mzitu.fragments.mzitu;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 
 import com.din.mzitu.R;
 import com.din.mzitu.adapter.TabLayoutAdapter;
-import com.din.mzitu.api.LiGui;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,9 +40,9 @@ public class FragmentMain extends Fragment {
         TabLayout tabLayout = view.findViewById(R.id.tablayout);
 
         List<Fragment> list = new ArrayList<>();
-        list.add(FragmentPostAll.newInstance(NEW, FragmentPostAll.PAGE_ONE));
-        list.add(FragmentPostAll.newInstance(BEST));
-        list.add(FragmentPostAll.newInstance(HOT));
+        list.add(FragmentPost.newInstance(NEW, FragmentPost.PAGE_ONE));
+        list.add(FragmentPost.newInstance(BEST));
+        list.add(FragmentPost.newInstance(HOT));
         List<String> titles = new ArrayList<>();
         titles.add("最新");
         titles.add("推荐");
@@ -51,6 +50,8 @@ public class FragmentMain extends Fragment {
 
         TabLayoutAdapter adapter = new TabLayoutAdapter(getChildFragmentManager(), list, titles);
         viewPager.setAdapter(adapter);
+
+        // 解决Tablayout过多时会destroy其他fragment
         viewPager.setOffscreenPageLimit(list.size());
         tabLayout.setupWithViewPager(viewPager);
         return view;

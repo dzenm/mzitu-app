@@ -1,30 +1,28 @@
-package com.din.mzitu.ui.fragments.mzitu;
+package com.din.mzitu.fragments.mzitu;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 
 import com.din.mzitu.R;
-import com.din.mzitu.adapter.PostSingleAdapter;
+import com.din.mzitu.activities.PicSingleActivity;
+import com.din.mzitu.adapter.PicAdapter;
 import com.din.mzitu.adapter.ViewHolder;
 import com.din.mzitu.api.LiGui;
 import com.din.mzitu.api.Mzitu;
-import com.din.mzitu.base.BaseAdapter;
 import com.din.mzitu.base.BaseFragment;
-import com.din.mzitu.bean.PostSingleBean;
-import com.din.mzitu.ui.activities.PictureSingleActivity;
-import com.din.mzitu.ui.fragments.main.FragmentLiGui;
-import com.din.mzitu.ui.fragments.main.FragmentMzitu;
+import com.din.mzitu.bean.PicBean;
+import com.din.mzitu.fragments.main.FragmentLiGui;
+import com.din.mzitu.fragments.main.FragmentMzitu;
 import com.din.mzitu.utill.BackToTopListener;
 
 import java.util.List;
 
 import io.reactivex.ObservableEmitter;
 
-public class FragmentPostSingle extends BaseFragment implements BaseAdapter.OnItemClickListener, BackToTopListener.BackToTopView {
+public class FragmentPic extends BaseFragment implements BackToTopListener.BackToTopView {
 
     public static final String POST_URL = "post_url";
     public static final String POST_TITLE = "post_title";
@@ -39,11 +37,11 @@ public class FragmentPostSingle extends BaseFragment implements BaseAdapter.OnIt
      * @param url 爬取数据的url
      * @return
      */
-    public static FragmentPostSingle newInstance(String url, int position) {
+    public static FragmentPic newInstance(String url, int position) {
         Bundle bundle = new Bundle();
         bundle.putString(POST_SELF, url);
         bundle.putInt(POSITION, position);
-        FragmentPostSingle fragmentSelf = new FragmentPostSingle();
+        FragmentPic fragmentSelf = new FragmentPic();
         fragmentSelf.setArguments(bundle);
         return fragmentSelf;
     }
@@ -69,11 +67,11 @@ public class FragmentPostSingle extends BaseFragment implements BaseAdapter.OnIt
     }
 
     @Override
-    public PostSingleAdapter getAdapter() {
+    public PicAdapter getAdapter() {
         // 双击状态栏回到顶部
         final Toolbar toolbar = getActivity().findViewById(R.id.toolbar);
         toolbar.setOnClickListener(new BackToTopListener(this));
-        return new PostSingleAdapter(this);
+        return new PicAdapter(this);
     }
 
     @Override
@@ -83,21 +81,29 @@ public class FragmentPostSingle extends BaseFragment implements BaseAdapter.OnIt
 
     @Override
     protected void observerData(Object p0) {
-        listBeans.addAll((List<PostSingleBean>) p0);
+        listBeans.addAll((List<PicBean>) p0);
         adapter.addBeanData(listBeans);
         swipeRefresh.setRefreshing(false);          // 获取数据之后，刷新停止
     }
 
     @Override
     public void onItemClick(ViewHolder holder, int position) {
-        PostSingleBean postSingleBean = (PostSingleBean) listBeans.get(position - 1);
-        Intent intent = new Intent(getActivity(), PictureSingleActivity.class);
-        intent.putExtra(PictureSingleActivity.PICTURE_TITLE, getArguments().getString(POST_TITLE));
-        intent.putExtra(PictureSingleActivity.PICTURE_IMAGE, postSingleBean.getImage());
-        intent.putExtra(PictureSingleActivity.PICTURE_POSITION, position - 1);
+        PicBean picBean = (PicBean) listBeans.get(position - 1);
+        Intent intent = new Intent(getActivity(), PicSingleActivity.class);
+        String title = getActivity().getIntent().getStringExtra(POST_TITLE);
+        if (title == null) {
+            title = getArguments().getString(POST_TITLE);
+        }
+        intent.putExtra(PicSingleActivity.PICTURE_TITLE, title);
+        intent.putExtra(PicSingleActivity.PICTURE_IMAGE, picBean.getImage());
+        intent.putExtra(PicSingleActivity.PICTURE_POSITION, position - 1);
         startActivity(intent, ActivityOptionsCompat.makeSceneTransitionAnimation
                 (getActivity(), holder.itemView, "transition_name_picture").toBundle());
         getActivity().overridePendingTransition(R.anim.zoom_in, R.anim.zoom_out);
+    }
+
+    @Override
+    public void onItemLongClick(int position) {
     }
 
     @Override

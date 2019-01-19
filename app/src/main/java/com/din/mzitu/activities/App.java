@@ -1,7 +1,6 @@
-package com.din.mzitu.ui.activities;
+package com.din.mzitu.activities;
 
 import android.app.Application;
-import android.content.Context;
 
 import com.din.mzitu.utill.CrashHandler;
 
@@ -23,4 +22,5 @@ public class App extends Application {
     public static App getApp() {
         return app;
     }
+
 }

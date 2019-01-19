@@ -4,12 +4,12 @@ import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.LifecycleOwner;
 import android.util.Log;
 
-import com.din.mzitu.adapter.PostAllAdapter;
-import com.din.mzitu.adapter.PostSingleAdapter;
+import com.din.mzitu.adapter.PostAdapter;
+import com.din.mzitu.adapter.PicAdapter;
 import com.din.mzitu.base.BaseApi;
-import com.din.mzitu.bean.PostAllBean;
+import com.din.mzitu.bean.PostBean;
 import com.din.mzitu.bean.PostDateBean;
-import com.din.mzitu.bean.PostSingleBean;
+import com.din.mzitu.bean.PicBean;
 
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -121,8 +121,8 @@ public final class Mzitu extends BaseApi implements IPresenter {
      * @param postUrl
      * @return
      */
-    public List<PostAllBean> parseMzituMainData(int page, String postUrl) {
-        List<PostAllBean> postAllBeans = new ArrayList<>();
+    public List<PostBean> parseMzituMainData(int page, String postUrl) {
+        List<PostBean> postBeans = new ArrayList<>();
         // 获取页面显示的页数
         Elements pageElements = selectElements(postUrl, "nav.pagination", A);
         if (pageElements != null) {
@@ -137,10 +137,10 @@ public final class Mzitu extends BaseApi implements IPresenter {
                     String url = elements.get(i).select(A).attr(HREF);
                     String image = elements.get(i).select(IMG).attr(DATA_ORIGINAL);
                     String title = elements.get(i).select(IMG).attr(ALT);
-                    postAllBeans.add(new PostAllBean(PostAllAdapter.TYPE_MZITU, url, image, title));     // 将获取到的内容放在List里
+                    postBeans.add(new PostBean(PostAdapter.TYPE_MZITU, url, image, title));     // 将获取到的内容放在List里
                 }
                 // 请求页数小于总页数返回请求的数据
-                return postAllBeans;
+                return postBeans;
             }
             // 请求页数超过总页数返回空
             return null;
@@ -154,8 +154,8 @@ public final class Mzitu extends BaseApi implements IPresenter {
      * @param postUrl
      * @return
      */
-    public List<PostSingleBean> parseMzituContentData(int page, String postUrl) {
-        List<PostSingleBean> postSingleBeans = new ArrayList<>();
+    public List<PicBean> parseMzituContentData(int page, String postUrl) {
+        List<PicBean> picBeans = new ArrayList<>();
         Elements elements = selectElements(postUrl, "div.pagenavi", SPAN);     // 分析网页的内容
         // 获取图片总数
         int pages = position(elements, 2);
@@ -172,10 +172,10 @@ public final class Mzitu extends BaseApi implements IPresenter {
                 Elements inform = selectElements(postUrl + "/" + i, "div.main-meta", SPAN);
                 String informs = inform.get(0).text() + "  " + inform.get(1).text() + "  " + inform.get(2).text() + "  ";
                 String url = element.attr(SRC);
-                postSingleBeans.add(new PostSingleBean(PostSingleAdapter.TYPE_MZITU, url, informs));     // 将获取到的内容放在List里
+                picBeans.add(new PicBean(PicAdapter.TYPE_MZITU, url, informs));     // 将获取到的内容放在List里
             }
             // 请求页数小于总页数返回请求的数据
-            return postSingleBeans;
+            return picBeans;
         }
         // 请求页数超过总页数返回空
         return null;
@@ -211,8 +211,8 @@ public final class Mzitu extends BaseApi implements IPresenter {
      * @param postUrl
      * @return
      */
-    public List<PostSingleBean> parseMzituSelfData(int page, String postUrl) {
-        List<PostSingleBean> postSingleBeans = new ArrayList<>();
+    public List<PicBean> parseMzituSelfData(int page, String postUrl) {
+        List<PicBean> picBeans = new ArrayList<>();
         // 通过页面跳转按钮找到页面的个数
         Elements elements = selectElements(postUrl + "1", "div.pagenavi-cm", A);
         int pages = Integer.valueOf(elements.get(elements.size() - 2).text());
@@ -222,13 +222,13 @@ public final class Mzitu extends BaseApi implements IPresenter {
             for (int i = 0; i < pageElement.size(); i++) {
                 String url = pageElement.get(i).select(IMG).attr("data-original");
                 String title = pageElement.get(i).select(A).text();
-                postSingleBeans.add(new PostSingleBean(PostSingleAdapter.TYPE_MZITU, url, title));
+                picBeans.add(new PicBean(PicAdapter.TYPE_MZITU, url, title));
                 Log.d("DZY", "url: " + url);
                 Log.d("DZY", "title: " + title);
                 // 将获取到的内容放在List里
             }
             // 请求页数小于总页数返回请求的数据
-            return postSingleBeans;
+            return picBeans;
         }
         // 请求页数超过总页数返回空
         return null;

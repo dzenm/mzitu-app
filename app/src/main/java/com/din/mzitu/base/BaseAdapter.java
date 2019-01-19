@@ -77,7 +77,7 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<RecyclerView.V
      */
     public void addBeanData(List<T> listBean) {
         beans = listBean;
-        notifyItemRangeInserted(notifyStart, beans.size() - notifyStart); // 添加分页数据之后刷新分页的数据
+        notifyItemRangeInserted(notifyStart, beans.size() - notifyStart - 1); // 添加分页数据之后刷新分页的数据
     }
 
     /**
@@ -168,14 +168,22 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<RecyclerView.V
         } else if (holder instanceof ViewHolder) {
             final ViewHolder viewHolder = (ViewHolder) holder;
             setBindViewHolderData(viewHolder, position - ITEM_HEAD_COUNT);
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (onItemClickListener != null && position > 0) {
+            if (onItemClickListener != null && position > 0) {
+                holder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
                         onItemClickListener.onItemClick(viewHolder, position);
                     }
-                }
-            });
+                });
+                holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        onItemClickListener.onItemLongClick(position);
+                        return true;
+                    }
+                });
+            }
+
         } else if (holder instanceof FootViewHolder) {
             FootViewHolder viewHolder = (FootViewHolder) holder;
             TextView tipText = viewHolder.get(R.id.tipText);
@@ -214,5 +222,7 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<RecyclerView.V
     public interface OnItemClickListener {
 
         void onItemClick(ViewHolder viewHolder, int position);
+
+        void onItemLongClick(int position);
     }
 }

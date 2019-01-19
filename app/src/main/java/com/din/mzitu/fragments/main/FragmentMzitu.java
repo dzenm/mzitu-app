@@ -1,4 +1,4 @@
-package com.din.mzitu.ui.fragments.main;
+package com.din.mzitu.fragments.main;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -12,9 +12,9 @@ import android.view.ViewGroup;
 
 import com.din.mzitu.R;
 import com.din.mzitu.adapter.TabLayoutAdapter;
-import com.din.mzitu.ui.fragments.mzitu.FragmentMain;
-import com.din.mzitu.ui.fragments.mzitu.FragmentPostAll;
-import com.din.mzitu.ui.fragments.mzitu.FragmentPostDate;
+import com.din.mzitu.fragments.mzitu.FragmentMain;
+import com.din.mzitu.fragments.mzitu.FragmentPost;
+import com.din.mzitu.fragments.mzitu.FragmentPostDate;
 import com.din.mzitu.utill.ScreenHelper;
 
 import java.util.ArrayList;
@@ -51,10 +51,10 @@ public class FragmentMzitu extends Fragment {
         List<Fragment> list = new ArrayList<>();
 
         list.add(FragmentMain.newInstance());
-        list.add(FragmentPostAll.newInstance(SEXY));
-        list.add(FragmentPostAll.newInstance(JAPAN));
-        list.add(FragmentPostAll.newInstance(TAIWAN));
-        list.add(FragmentPostAll.newInstance(PURE));
+        list.add(FragmentPost.newInstance(SEXY));
+        list.add(FragmentPost.newInstance(JAPAN));
+        list.add(FragmentPost.newInstance(TAIWAN));
+        list.add(FragmentPost.newInstance(PURE));
         list.add(FragmentPostSelf.newInstance());
         list.add(FragmentPostDate.newInstance(DAYUPDATE));
 
@@ -69,7 +69,8 @@ public class FragmentMzitu extends Fragment {
 
         TabLayoutAdapter adapter = new TabLayoutAdapter(getChildFragmentManager(), list, titles);
         viewPager.setAdapter(adapter);
-        // 解决瀑布流空白卡顿
+
+        // 解决Tablayout过多时会destroy其他fragment
         viewPager.setOffscreenPageLimit(list.size());
         tabLayout.setupWithViewPager(viewPager);
     }

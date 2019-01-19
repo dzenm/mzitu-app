@@ -1,12 +1,12 @@
 package com.din.mzitu.bean;
 
-public class PostSingleBean {
+public class PicBean {
 
     private int type;
     private String image;
     private String title;
 
-    public PostSingleBean(int type, String image, String title) {
+    public PicBean(int type, String image, String title) {
         this.type = type;
         this.image = image;
         this.title = title;

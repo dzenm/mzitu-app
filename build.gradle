@@ -1,5 +1,6 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
-
+// 这里将config.gradle文件引用进来，app的gradle才能使用到里面的配置项
+apply from: "config.gradle"
 buildscript {
     
     repositories {

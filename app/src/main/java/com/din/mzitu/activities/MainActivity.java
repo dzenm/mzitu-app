@@ -1,5 +1,6 @@
-package com.din.mzitu.ui.activities;
+package com.din.mzitu.activities;
 
+import android.Manifest;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -9,20 +10,21 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.MenuItem;
 
 import com.din.mzitu.R;
 import com.din.mzitu.api.LiGui;
-import com.din.mzitu.ui.fragments.main.FragmentLiGui;
-import com.din.mzitu.ui.fragments.main.FragmentMzitu;
+import com.din.mzitu.base.BaseActivity;
+import com.din.mzitu.fragments.main.FragmentLiGui;
+import com.din.mzitu.fragments.main.FragmentMzitu;
+import com.din.mzitu.utill.FileUtil;
 import com.din.mzitu.utill.FragmentUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
@@ -44,10 +46,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onStart() {
         super.onStart();
-        if (!isInit) {
-            initView();
-            isInit = true;
-        }
+        // 请求权限
+        requestPermission(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, new OnPermissionCallback() {
+            @Override
+            public void onSuccess() {
+                if (!isInit) {
+                    FileUtil.getInstance().createRootPath(getAppName());
+                    initView();
+                    isInit = true;
+                }
+            }
+
+            @Override
+            public void onFailed() {
+                System.exit(0);
+            }
+        });
     }
 
     private void initView() {
@@ -91,13 +105,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     } else if (item.getItemId() == R.id.setting) {
 
                     } else if (item.getItemId() == R.id.issues) {
-                        // 跳转懂啊网页，提Issues
+                        // 跳转网页，提Issues
                         Intent intent = new Intent(Intent.ACTION_VIEW);
                         intent.setData(Uri.parse("https://github.com/freedomeden/mzitu-app/issues"));
                         startActivity(intent);
                     } else if (item.getItemId() == R.id.about) {
                         // 联系我
-                        Intent intent = new Intent(Intent.ACTION_ATTACH_DATA);
+
+                        // 加入mailto:限制了只有邮件应用能响应这个intent,其他软件如短信、社交应用等都不能响应
+                        Intent intent = new Intent(Intent.ACTION_SENDTO);
+                        //所有“主送”收件人电子邮件地址的字符串数组。
                         intent.setData(Uri.parse("mailto:dinzhenyan1997@126.com"));
                         intent.putExtra(Intent.EXTRA_SUBJECT, "意见反馈");
                         startActivity(intent);

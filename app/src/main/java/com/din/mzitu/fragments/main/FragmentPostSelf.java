@@ -1,17 +1,16 @@
-package com.din.mzitu.ui.fragments.main;
+package com.din.mzitu.fragments.main;
 
 import android.content.Intent;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.LinearLayoutManager;
-import android.view.View;
 
 import com.din.mzitu.R;
-import com.din.mzitu.adapter.PostSingleAdapter;
+import com.din.mzitu.adapter.PicAdapter;
 import com.din.mzitu.adapter.ViewHolder;
 import com.din.mzitu.api.Mzitu;
 import com.din.mzitu.base.BaseFragment;
-import com.din.mzitu.bean.PostSingleBean;
-import com.din.mzitu.ui.activities.PictureSingleActivity;
+import com.din.mzitu.bean.PicBean;
+import com.din.mzitu.activities.PicSingleActivity;
 
 import java.util.List;
 
@@ -38,8 +37,8 @@ public class FragmentPostSelf extends BaseFragment {
     }
 
     @Override
-    public PostSingleAdapter getAdapter() {
-        return new PostSingleAdapter(this);
+    public PicAdapter getAdapter() {
+        return new PicAdapter(this);
     }
 
     @Override
@@ -49,18 +48,18 @@ public class FragmentPostSelf extends BaseFragment {
 
     @Override
     protected void observerData(Object o) {
-        listBeans.addAll((List<PostSingleBean>) o);
+        listBeans.addAll((List<PicBean>) o);
         adapter.addBeanData(listBeans);
         swipeRefresh.setRefreshing(false);          // 获取数据之后，刷新停止
     }
 
     @Override
     public void onItemClick(ViewHolder holder, int position) {
-        PostSingleBean postSingleBean = (PostSingleBean) listBeans.get(position - 1);
-        Intent intent = new Intent(getActivity(), PictureSingleActivity.class);
-        intent.putExtra(PictureSingleActivity.PICTURE_TITLE, postSingleBean.getTitle());
-        intent.putExtra(PictureSingleActivity.PICTURE_IMAGE, postSingleBean.getImage());
-        intent.putExtra(PictureSingleActivity.PICTURE_POSITION, position - 1);
+        PicBean picBean = (PicBean) listBeans.get(position - 1);
+        Intent intent = new Intent(getActivity(), PicSingleActivity.class);
+        intent.putExtra(PicSingleActivity.PICTURE_TITLE, picBean.getTitle());
+        intent.putExtra(PicSingleActivity.PICTURE_IMAGE, picBean.getImage());
+        intent.putExtra(PicSingleActivity.PICTURE_POSITION, position - 1);
         startActivity(intent, ActivityOptionsCompat.makeSceneTransitionAnimation
                 (getActivity(), holder.itemView, "transition_name_picture").toBundle());
         getActivity().overridePendingTransition(R.anim.zoom_in, R.anim.zoom_out);

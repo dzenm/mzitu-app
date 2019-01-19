@@ -1,21 +1,62 @@
 apply plugin: 'com.android.application'
 
+def cfg = rootProject.ext.android
+def libraries = rootProject.ext.dependencies
+
 android {
-    compileSdkVersion 28
+    compileSdkVersion cfg.compileSdkVersion
     dataBinding { enabled true }
     defaultConfig {
-        applicationId "com.din.mzitu"
-        minSdkVersion 21
-        targetSdkVersion 28
-        versionCode 1
-        versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        applicationId cfg.applicationId
+        minSdkVersion cfg.minSdkVersion
+        targetSdkVersion cfg.targetSdkVersion
+        versionCode cfg.versionCode
+        versionName cfg.versionName
+        testInstrumentationRunner cfg.testInstrumentationRunner
     }
+
+    //配置签名
+    signingConfigs {
+        debug {
+            storeFile file("../app/meizitu.store")
+            storePassword KEY_STORE_PASSWORD
+            keyAlias KEY_ALIAS_DEBUG
+            keyPassword KEY_PASSWORD_DEBUG
+        }
+
+        release {
+            storeFile file("../app/meizitu.store")
+            storePassword KEY_STORE_PASSWORD
+            keyAlias KEY_ALIAS_RELEASE
+            keyPassword KEY_PASSWORD_RELEASE
+        }
+    }
+
     buildTypes {
         release {
-            minifyEnabled false
+            shrinkResources true                    // 是否压缩资源
+            minifyEnabled true                      // 是否混淆
+            zipAlignEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            // 混淆配置文件
+            resValue "string", "app_name", "@string/app_name_release"
+            // 在AndroidManifest.xml中配置的app名称，在这里实现了动态配置
+            signingConfig signingConfigs.release    // 签名配置
         }
+        debug {
+            shrinkResources false                   // 是否压缩资源
+            minifyEnabled false                     // 是否混淆
+            zipAlignEnabled false
+            pseudoLocalesEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            // 混淆配置文件
+            resValue "string", "app_name", "@string/app_name_debug"
+            // 在AndroidManifest.xml中配置的app名称，在这里实现了动态配置
+            signingConfig signingConfigs.debug      // 签名配置
+            applicationIdSuffix '.debug'
+        }
+    }
+    productFlavors {
     }
 }
 
@@ -26,16 +67,20 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    implementation 'org.jsoup:jsoup:1.11.3'
-    implementation 'com.android.support:recyclerview-v7:28.+'
-    implementation 'com.android.support:design:28.+'
-    implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
-    implementation 'com.github.bumptech.glide:glide:4.7.1'
-    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
-    implementation 'com.android.support:cardview-v7:28.+'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.8.0'
-    implementation 'io.reactivex.rxjava2:rxjava:2.2.4'
-    implementation 'com.android.support:palette-v7:28.+'
-    implementation "android.arch.lifecycle:livedata:1.1.0"
-    annotationProcessor "android.arch.lifecycle:compiler:1.1.0"
+    implementation libraries.design
+    implementation libraries.recyclerview
+    implementation libraries.cardview
+    implementation libraries.palette
+    implementation libraries.okhttp3
+    implementation libraries.jsoup
+    implementation libraries.lifecycle
+    annotationProcessor libraries.glideCompiler
+    implementation libraries.rxjava2
+    implementation libraries.rxandroid
+    implementation libraries.glide
+    annotationProcessor libraries.lifecycleCompiler
+    implementation(libraries.glideRecyclerview) {
+        // Excludes the support library because it's already included by Glide.
+        transitive = false
+    }
 }

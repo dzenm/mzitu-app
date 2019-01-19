@@ -13,14 +13,14 @@ import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
 import com.din.mzitu.R;
 import com.din.mzitu.base.BaseAdapter;
-import com.din.mzitu.bean.PostSingleBean;
+import com.din.mzitu.bean.PicBean;
 import com.din.mzitu.utill.GlideApp;
 
 import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
 
-public class PostSingleAdapter extends BaseAdapter {
+public class PicAdapter extends BaseAdapter {
 
-    public PostSingleAdapter(Fragment fragment) {
+    public PicAdapter(Fragment fragment) {
         super(fragment);
     }
 
@@ -31,19 +31,19 @@ public class PostSingleAdapter extends BaseAdapter {
 
     @Override
     protected void setBindViewHolderData(ViewHolder viewHolder, int position) {
-        PostSingleBean postSingleBean = (PostSingleBean) beans.get(position);
+        PicBean picBean = (PicBean) beans.get(position);
         TextView title = viewHolder.get(R.id.text);
         final ImageView imageView = viewHolder.get(R.id.image);
-        title.setText(postSingleBean.getTitle());
+        title.setText(picBean.getTitle());
         String header = "";
-        if (postSingleBean.getType() == TYPE_MZITU) {
+        if (picBean.getType() == TYPE_MZITU) {
             header = HEADER_MZITU;
-        } else if (postSingleBean.getType() == TYPE_LIGUI) {
+        } else if (picBean.getType() == TYPE_LIGUI) {
             header = HEADER_LIGUI;
         }
 
         String tag = (String) imageView.getTag(R.id.image_url);
-        String url = postSingleBean.getImage();
+        String url = picBean.getImage();
 
         // 防盗链，图片会加载失败，需要更换请求头
         GlideUrl glideUrl = new GlideUrl(url == tag ? tag : url, header(header));

@@ -1,6 +1,6 @@
 package com.din.mzitu.bean;
 
-public class PostAllBean {
+public class PostBean {
 
     private int type;
     private String url;
@@ -8,7 +8,7 @@ public class PostAllBean {
     private String title;
 
 
-    public PostAllBean(int type, String url, String image, String title) {
+    public PostBean(int type, String url, String image, String title) {
         this.type = type;
         this.url = url;
         this.image = image;

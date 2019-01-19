@@ -1,4 +1,4 @@
-package com.din.mzitu.ui.activities;
+package com.din.mzitu.activities;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -23,13 +23,14 @@ import android.widget.Toast;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.din.mzitu.R;
+import com.din.mzitu.base.BaseActivity;
 import com.din.mzitu.utill.ColorUtil;
 import com.din.mzitu.utill.FileUtil;
 import com.din.mzitu.utill.GlideApp;
 
 import java.io.IOException;
 
-public class PictureSingleActivity extends AppCompatActivity {
+public class PicSingleActivity extends BaseActivity {
 
     public static final String PICTURE_TITLE = "picture_title";
     public static final String PICTURE_IMAGE = "picture_image";
@@ -109,23 +110,6 @@ public class PictureSingleActivity extends AppCompatActivity {
         overridePendingTransition(R.anim.zoom_in, R.anim.zoom_out);
     }
 
-    // 动态存储权限申请
-    private static final String[] PERMISSIONS_DANGEROUS = new String[]{"android.permission.WRITE_EXTERNAL_STORAGE"};
-
-    public static void verifyPermissions(Activity activity) {
-        try {
-            //  检测是否有指定的权限
-            int permission = ActivityCompat.checkSelfPermission(
-                    activity, PERMISSIONS_DANGEROUS[0]);
-            //  如果包管理没有该权限,动态的申请权限
-            if (permission != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(activity, PERMISSIONS_DANGEROUS, 0);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.picture_menu, menu);
@@ -137,10 +121,8 @@ public class PictureSingleActivity extends AppCompatActivity {
         if (item.getItemId() == android.R.id.home) {
             onBackPressed();
         } else if (item.getItemId() == R.id.save) {
-            // 请求权限
-            verifyPermissions(this);
             if (bitmap != null) {
-                boolean saveSuccess = FileUtil.savePhoto(bitmap, title, String.valueOf(position) + ".jpg");
+                boolean saveSuccess = FileUtil.savePhoto(bitmap, title, String.valueOf(position + 1) + ".jpg");
                 if (saveSuccess) {
                     Toast.makeText(this, "保存成功", Toast.LENGTH_SHORT).show();
                 } else {

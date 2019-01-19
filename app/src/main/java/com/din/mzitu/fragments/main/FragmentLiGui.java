@@ -1,4 +1,4 @@
-package com.din.mzitu.ui.fragments.main;
+package com.din.mzitu.fragments.main;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 import com.din.mzitu.R;
 import com.din.mzitu.adapter.TabLayoutAdapter;
 import com.din.mzitu.api.LiGui;
-import com.din.mzitu.ui.fragments.ligui.FragmentPost;
+import com.din.mzitu.fragments.ligui.FragmentPost;
 import com.din.mzitu.utill.ScreenHelper;
 
 import java.util.ArrayList;
@@ -30,7 +30,6 @@ import io.reactivex.schedulers.Schedulers;
 public class FragmentLiGui extends Fragment {
 
     public static final String LIGUI = "LIGUI";
-    public static final String INDEX = "http://www.ligui.org/index.html";
 
     @Nullable
     @Override
@@ -50,7 +49,6 @@ public class FragmentLiGui extends Fragment {
         Observable.create(new ObservableOnSubscribe<List<List>>() {
             @Override
             public void subscribe(ObservableEmitter<List<List>> emitter) {
-//                LiGui.getInstance().parseLiGuiBanner(INDEX);
                 emitter.onNext(LiGui.getInstance().getTopNavs());
             }
         }).subscribeOn(Schedulers.io())

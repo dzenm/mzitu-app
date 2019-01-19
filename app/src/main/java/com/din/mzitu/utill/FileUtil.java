@@ -3,6 +3,7 @@ package com.din.mzitu.utill;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Environment;
+import android.util.Log;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -11,6 +12,31 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 public class FileUtil {
+
+    private static final String TAG = "FileUtil";
+    private static String rootPath;            // app名称目录
+
+    private FileUtil() {
+    }
+
+    private static class INSTANCE {
+        private static FileUtil instance = new FileUtil();
+    }
+
+    public static FileUtil getInstance() {
+        return INSTANCE.instance;
+    }
+
+    public FileUtil createRootPath(String appName) {
+        File file = new File(Environment.getExternalStorageDirectory() + File.separator + appName);
+        if (!file.exists()) {
+            file.mkdir();
+        }
+        rootPath = file.getAbsolutePath();
+        Log.d(TAG, "the new create app path is: " + rootPath);
+        return this;
+    }
+
     /*
      *  获取外部存储状态
      */
@@ -32,9 +58,10 @@ public class FileUtil {
     public static String getDirect(String... folderName) {
         StringBuffer path = new StringBuffer();
         for (String s : folderName) {
-            path.append(s + "/");
+            path.append("/" + s);
         }
-        File file = new File(Environment.getExternalStorageDirectory() + File.separator + path);
+        File file = new File(rootPath + path);
+        Log.d("DZY", "the direct path is: " + file.getAbsolutePath());
         //  判断外部存储状态
         if (externalStatus()) {
             if (!file.exists()) {   //  如果该文件夹不存在，则进行创建
@@ -50,7 +77,7 @@ public class FileUtil {
      * @param bitmap
      */
     public static boolean savePhoto(Bitmap bitmap, String direct, String photoName) {
-        String path = getDirect("SexyPicture", direct);
+        String path = getDirect("cache", direct);
         File file = new File(path, photoName);
         OutputStream outputStream = null;
         try {
