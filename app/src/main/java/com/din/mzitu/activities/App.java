@@ -2,7 +2,7 @@ package com.din.mzitu.activities;
 
 import android.app.Application;
 
-import com.din.mzitu.utill.CrashHandler;
+import com.din.mzitu.basehelper.CrashHandler;
 
 /**
  * @author: dinzhenyan
@@ -15,12 +15,11 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        CrashHandler.getInstance().init(this);
         app = this;
+        CrashHandler.getInstance().init(this);
     }
 
     public static App getApp() {
         return app;
     }
-
 }

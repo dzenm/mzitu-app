@@ -1,13 +1,13 @@
 package com.din.mzitu.api;
 
-import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.LifecycleOwner;
 
-import com.din.mzitu.adapter.PostAdapter;
 import com.din.mzitu.adapter.PicAdapter;
+import com.din.mzitu.adapter.PostAdapter;
 import com.din.mzitu.base.BaseApi;
-import com.din.mzitu.bean.PostBean;
+import com.din.mzitu.basehelper.LogHelper;
 import com.din.mzitu.bean.PicBean;
+import com.din.mzitu.bean.PostBean;
 
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -19,19 +19,7 @@ import java.util.List;
  * @author: dinzhenyan
  * @time: 2018/12/4 下午12:19
  */
-public final class LiGui extends BaseApi implements IPresenter {
-
-    public static final String LIGUI = "http://www.ligui.org";
-
-    private final static int OFFSET_PICTURE = 5;
-
-    private final static String HREF = "href";
-    private final static String IMG = "img";
-    private final static String SRC = "src";
-    private final static String ALT = "alt";
-    private final static String LI = "li";
-    private final static String A = "a";
-    private final static String SUFFIX = ".html";
+public final class LiGui extends BaseApi {
 
     private List<List> topNavs;
 
@@ -41,6 +29,7 @@ public final class LiGui extends BaseApi implements IPresenter {
 
     @Override
     public void onCreate(LifecycleOwner owner) {
+        LogHelper.d("主页面打开，创建线程获取");
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -49,40 +38,12 @@ public final class LiGui extends BaseApi implements IPresenter {
         }).start();
     }
 
-    @Override
-    public void onStart(LifecycleOwner owner) {
-
-    }
-
-    @Override
-    public void onResume(LifecycleOwner owner) {
-    }
-
-    @Override
-    public void onPause(LifecycleOwner owner) {
-
-    }
-
-    @Override
-    public void onStop(LifecycleOwner owner) {
-
-    }
-
-    @Override
-    public void onDestory(LifecycleOwner owner) {
-
-    }
-
-    @Override
-    public void onLifeCycleChanged(LifecycleOwner owner, Lifecycle.Event event) {
-
-    }
-
     private static class Instance {
         private static final LiGui instance = new LiGui();
     }
 
     public static LiGui getInstance() {
+        LogHelper.d("LiGui---创建爬虫单例");
         return Instance.instance;
     }
 
@@ -102,10 +63,15 @@ public final class LiGui extends BaseApi implements IPresenter {
         List<String> urls = new ArrayList<>();
         Elements elements = selectElements(webURL, "div.topnav", A);
         if (elements != null) {
+            LogHelper.d("LiGui---爬虫Banner的数量: " + elements.size());
             for (int i = 0; i < elements.size(); i++) {
                 if (i != 0 && i != 1 && i != 3) {
-                    titles.add(elements.get(i).text());
-                    urls.add(LIGUI + elements.get(i).attr(HREF));
+                    String title = elements.get(i).text();
+                    String url = LIGUI + elements.get(i).attr(HREF);
+                    titles.add(title);
+                    LogHelper.d("LiGui---爬虫Banner的标题: " + title);
+                    urls.add(url);
+                    LogHelper.d("LiGui---爬虫Banner的URL: " + url);
                 }
             }
             topNavs.add(titles);
@@ -120,11 +86,13 @@ public final class LiGui extends BaseApi implements IPresenter {
      * @return
      */
     public List<PostBean> parseLiGuiMainData(int page, String webURL) {
+        LogHelper.d("LiGui---主页面爬虫的URL: " + webURL);
         List<PostBean> postBeans = new ArrayList<>();
         Elements element = selectElements(webURL, "div.pageinfo", A);       // 获取分页的角标
         if (element != null) {
-            //对字符串剪切获取最终的分页数量
+            // 对字符串剪切获取最终的分页数量
             String href = element.get(element.size() - 1).attr(HREF);
+            LogHelper.d("LiGui---获取分页的数量: " + href);
             int position;
             String website = null;
             if (webURL.equals("http://www.ligui.org/youmi/")) {
@@ -144,6 +112,9 @@ public final class LiGui extends BaseApi implements IPresenter {
                         String url = LIGUI + elements.get(i).select(A).attr(HREF);
                         String image = LIGUI + elements.get(i).select(IMG).attr(SRC);
                         String title = elements.get(i).select(IMG).attr(ALT);
+                        LogHelper.d("LiGui---获取每个帖子的url: " + url);
+                        LogHelper.d("LiGui---获取每个帖子的图片: " + image);
+                        LogHelper.d("LiGui---获取每个帖子的标题: " + title);
                         postBeans.add(new PostBean(PostAdapter.TYPE_LIGUI, url, image, title));
                     }
                     return postBeans;
@@ -154,9 +125,10 @@ public final class LiGui extends BaseApi implements IPresenter {
     }
 
     public List<PicBean> parseLiGuiContentData(int page, String webURL) {
+        LogHelper.d("LiGui---帖子的URL: " + webURL);
         List<PicBean> picBeans = new ArrayList<>();
-        int start = (page - 1) * OFFSET_PICTURE + 1;
-        int end = page * OFFSET_PICTURE;
+        int start = (page - 1) * OFFSET + 1;
+        int end = page * OFFSET;
         for (int i = start; i <= end; i++) {
             String web = i == 1 ? webURL : webURL.substring(0, webURL.lastIndexOf(".")) + "_" + i + SUFFIX;
             Element element = selectElements(web, "div.nry", IMG).first();
@@ -165,6 +137,8 @@ public final class LiGui extends BaseApi implements IPresenter {
             }
             String title = element.attr(ALT);
             String url = LIGUI + element.attr(SRC);
+            LogHelper.d("LiGui---帖子的标题: " + title);
+            LogHelper.d("LiGui---帖子的图片URL: " + url);
             picBeans.add(new PicBean(PicAdapter.TYPE_LIGUI, url, title));
         }
         return picBeans;

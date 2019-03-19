@@ -1,17 +1,13 @@
 package com.din.mzitu.activities;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.WallpaperManager;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -25,7 +21,7 @@ import com.bumptech.glide.request.transition.Transition;
 import com.din.mzitu.R;
 import com.din.mzitu.base.BaseActivity;
 import com.din.mzitu.utill.ColorUtil;
-import com.din.mzitu.utill.FileUtil;
+import com.din.mzitu.basehelper.FileHelper;
 import com.din.mzitu.utill.GlideApp;
 
 import java.io.IOException;
@@ -122,7 +118,7 @@ public class PicSingleActivity extends BaseActivity {
             onBackPressed();
         } else if (item.getItemId() == R.id.save) {
             if (bitmap != null) {
-                boolean saveSuccess = FileUtil.savePhoto(bitmap, title, String.valueOf(position + 1) + ".jpg");
+                boolean saveSuccess = FileHelper.getInstance().savePhoto(bitmap, title, String.valueOf(position + 1) + ".jpg");
                 if (saveSuccess) {
                     Toast.makeText(this, "保存成功", Toast.LENGTH_SHORT).show();
                 } else {

@@ -31,7 +31,7 @@ public class FragmentPostDate extends BaseFragment {
     @Override
     protected void observableTask(ObservableEmitter emitter) {
         String url = getArguments().getString(POST_DATE);
-        emitter.onNext(Mzitu.getInstance().parseMzituUpdateData(++page, url));
+        emitter.onNext(Mzitu.getInstance().parseMzituUpdateData(page++, url));
         emitter.onComplete();
     }
 

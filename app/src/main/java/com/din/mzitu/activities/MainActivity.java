@@ -16,9 +16,10 @@ import android.view.MenuItem;
 import com.din.mzitu.R;
 import com.din.mzitu.api.LiGui;
 import com.din.mzitu.base.BaseActivity;
+import com.din.mzitu.basehelper.FileHelper;
+import com.din.mzitu.basehelper.PermitManager;
 import com.din.mzitu.fragments.main.FragmentLiGui;
 import com.din.mzitu.fragments.main.FragmentMzitu;
-import com.din.mzitu.utill.FileUtil;
 import com.din.mzitu.utill.FragmentUtil;
 
 import java.util.ArrayList;
@@ -47,21 +48,25 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     protected void onStart() {
         super.onStart();
         // 请求权限
-        requestPermission(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, new OnPermissionCallback() {
-            @Override
-            public void onSuccess() {
-                if (!isInit) {
-                    FileUtil.getInstance().createRootPath(getAppName());
-                    initView();
-                    isInit = true;
-                }
-            }
+        String[] permissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,};
 
-            @Override
-            public void onFailed() {
-                System.exit(0);
-            }
-        });
+        PermitManager.getInstance()
+                .with(this)
+                .load(permissions)
+                .into(new PermitManager.OnRequestPermissionListener() {
+                    @Override
+                    public void onRequest(boolean isGrant) {
+                        if (isGrant) {
+                            if (!isInit) {
+                                initView();
+                                isInit = true;
+                                FileHelper.getInstance().init("Mzitu");
+                            }
+                        } else {
+                            System.exit(1);
+                        }
+                    }
+                }).requestPermission();
     }
 
     private void initView() {
@@ -123,5 +128,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             }, 300);
         }
         return false;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        PermitManager.getInstance().requestPermissionResult(requestCode, permissions, grantResults);
     }
 }
